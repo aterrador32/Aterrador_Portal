@@ -367,7 +367,7 @@ T-REX — Design & Development
 
 - 🏫 University: https://www.juniv.edu
 
-© 2025 · All rights reserved · Designed & Developed by T-REX
+© 2026 · All rights reserved · Designed & Developed by T-REX
 
 
 ---
