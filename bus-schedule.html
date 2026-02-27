@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" type="image/png" href="Images/favicon1.png" />
+    <meta
+      name="description"
+      content="JU Bus Schedule — CSE 52nd Batch (Aterrador), Jahangirnagar University." />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta
+      http-equiv="Referrer-Policy"
+      content="strict-origin-when-cross-origin" />
+    <title>Bus Schedule · ATERRADOR — CSE 52nd Batch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Courier+Prime:wght@400;700&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="css/bus-schedule.css" />
+  </head>
+  <body>
+    <a href="#main" class="skip">Skip to content</a>
+    <div class="gbg" aria-hidden="true"></div>
+
+    <!-- ══════ HEADER ══════ -->
+    <header role="banner">
+      <a
+        href="https://www.juniv.edu"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hd-ju"
+        aria-label="Jahangirnagar University official website">
+        <div class="ju-box">
+          <img src="Images/JU_logo_White.svg" alt="Jahangirnagar University" />
+        </div>
+        <div class="ju-lbl"><strong>Jahangirnagar</strong>University</div>
+      </a>
+      <nav class="desk" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="routine.html">Routine</a>
+        <a href="exam-schedule.html">Exams</a>
+        <a href="resources.html">Resources</a>
+        <a href="notice-board.html">Notices</a>
+        <a href="bus-schedule.html" class="cur" aria-current="page">Bus</a>
+        <a href="teachers.html">Teachers</a>
+        <a href="about.html">About Us</a>
+      </nav>
+      <a href="index.html" class="hd-bt">
+        <div class="bt-box">
+          <img src="Images/aterrador_logo.svg" alt="CSE 52" />
+        </div>
+        <div class="bt-lbl"><strong>ATERRADOR</strong>52nd Batch</div>
+      </a>
+      <button
+        class="burger"
+        id="burger"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mob-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </header>
+
+    <nav class="mob" id="mob-nav" aria-label="Mobile navigation">
+      <a href="index.html">Home</a>
+      <a href="routine.html">Routine</a>
+      <a href="exam-schedule.html">Exams</a>
+      <a href="resources.html">Resources</a>
+      <a href="notice-board.html">Notices</a>
+      <a href="bus-schedule.html">Bus</a>
+      <a href="teachers.html">Teachers</a>
+      <a href="about.html">About Us</a>
+    </nav>
+
+    <!-- ══════ BANNER ══════ -->
+    <div class="banner">
+      <div class="ban-in">
+        <div class="ban-left">
+          <div class="ban-eye">
+            CSE 52nd Batch · Aterrador · <span data-semester> th Semester</span>
+          </div>
+          <h1 class="ban-h" id="ban-h">Bus <em>Schedule</em></h1>
+          <p class="ban-sub" id="ban-sub">
+            Jahangirnagar University — Official Bus Timetable
+          </p>
+        </div>
+        <div class="ban-badge">
+          <div class="ban-badge-dot"></div>
+          JU Transport
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ INFO STRIP ══════ -->
+    <div class="info-strip">
+      <div class="is-in">
+        <div class="is-item">
+          <div class="is-dot"></div>
+          Route <span>Dhaka ↔ JU Campus</span>
+        </div>
+        <div class="is-item">🚌 <span>JU Official Bus Service</span></div>
+        <div class="is-item is-right">
+          <a
+            id="open-btn"
+            class="open-btn"
+            href="YOUR_DRIVE_PDF_LINK_HERE"
+            target="_blank"
+            rel="noopener noreferrer">
+            ↗ Open in Drive
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ MAIN ══════ -->
+    <main id="main">
+      <div class="viewer-wrap">
+        <div class="pdf-shell">
+          <!-- toolbar -->
+          <div class="pdf-toolbar">
+            <div class="pdf-title">JU Bus Schedule</div>
+            <div class="pdf-actions">
+              <a
+                id="download-btn"
+                class="pdf-btn"
+                href="YOUR_DRIVE_PDF_LINK_HERE"
+                download
+                target="_blank"
+                rel="noopener noreferrer">
+                ⬇ Download PDF
+              </a>
+              <a
+                id="fullscreen-btn"
+                class="pdf-btn primary"
+                href="YOUR_DRIVE_PDF_LINK_HERE"
+                target="_blank"
+                rel="noopener noreferrer">
+                ⛶ Open Full Screen
+              </a>
+            </div>
+          </div>
+
+          <!-- PDF iframe — replace src with your Google Drive embed link -->
+          <iframe
+            id="pdf-frame"
+            class="pdf-frame"
+            src="YOUR_DRIVE_EMBED_URL_HERE"
+            allow="autoplay"
+            allowfullscreen
+            title="JU Bus Schedule PDF"
+            aria-label="JU Bus Schedule PDF viewer"></iframe>
+
+          <!-- blocked fallback (shown by JS if iframe fails to load) -->
+          <div class="pdf-blocked" id="pdf-blocked">
+            <div class="pdf-blocked-ico">🚌</div>
+            <div class="pdf-blocked-title">PDF could not be embedded</div>
+            <div class="pdf-blocked-sub">
+              Google Drive may have blocked the preview in this browser.<br />
+              <a
+                id="fallback-link"
+                href="YOUR_DRIVE_PDF_LINK_HERE"
+                target="_blank"
+                rel="noopener noreferrer">
+                Open the bus schedule directly on Google Drive →
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- /pdf-shell -->
+      </div>
+    </main>
+    <!-- ══════ FOOTER ══════ -->
+    <footer role="contentinfo">
+      <div class="fg">
+        <div>
+          <div class="fb-n">ATERRADOR</div>
+          <div class="fb-i">
+            CSE 52nd Batch<br />
+            Dept. of Computer Science &amp; Engineering<br />
+            Jahangirnagar University, Savar, Dhaka-1342<br /><br />
+            <div class="f-contact">
+              <a
+                href="mailto:aterrador32@gmail.com"
+                class="f-icon"
+                aria-label="Email">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                </svg>
+              </a>
+              <a
+                href="https://facebook.com/aterrador32"
+                target="_blank"
+                rel="noopener"
+                class="f-icon"
+                aria-label="Facebook">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor">
+                  <path
+                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="fct">Portal</div>
+          <ul class="fl">
+            <li><a href="routine.html">Class Routine</a></li>
+            <li><a href="exam-schedule.html">Exam Schedule</a></li>
+            <li><a href="resources.html">Resources</a></li>
+            <li><a href="notice-board.html">Notice Board</a></li>
+            <li><a href="bus-schedule.html">Bus Schedule</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="fct">People</div>
+          <ul class="fl">
+            <li><a href="teachers.html">Teacher Contacts</a></li>
+            <li><a href="about.html">About Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="fct">External</div>
+          <ul class="fl">
+            <li>
+              <a href="https://www.juniv.edu" target="_blank" rel="noopener"
+                >JU Website</a
+              >
+            </li>
+            <li>
+              <a href="https://jucsu.juniv.edu/" target="_blank" rel="noopener"
+                >JUCSU</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="fbot">
+        <div class="fcpy">
+          © <span id="yr"></span> <span>ATERRADOR</span> · All rights reserved ·
+          Designed &amp; Developed by T-REX
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/bus-schedule.js"></script>
+  </body>
+</html>

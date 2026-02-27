@@ -1,0 +1,622 @@
+"use strict";
+document.getElementById("yr").textContent = new Date().getFullYear();
+
+/* ── hamburger ── */
+const burger = document.getElementById("burger");
+const mobNav = document.getElementById("mob-nav");
+function toggleMenu(f) {
+  const open = f !== undefined ? f : !mobNav.classList.contains("open");
+  mobNav.classList.toggle("open", open);
+  burger.classList.toggle("open", open);
+  burger.setAttribute("aria-expanded", String(open));
+  burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  document.body.style.overflow = open ? "hidden" : "";
+}
+burger.addEventListener("click", () => toggleMenu());
+document.addEventListener("click", (e) => {
+  if (
+    mobNav.classList.contains("open") &&
+    !mobNav.contains(e.target) &&
+    !burger.contains(e.target)
+  )
+    toggleMenu(false);
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") toggleMenu(false);
+});
+mobNav
+  .querySelectorAll("a")
+  .forEach((a) => a.addEventListener("click", () => toggleMenu(false)));
+const hdr = document.querySelector("header");
+window.addEventListener(
+  "scroll",
+  () => {
+    hdr.style.boxShadow =
+      window.scrollY > 10 ? "0 4px 32px rgba(0,0,0,.6)" : "none";
+  },
+  { passive: true },
+);
+
+let PALETTE = {};
+
+/* Build palette */
+function buildPaletteEntry(colorStr) {
+  const c = colorStr.trim();
+  // Parse hex to RGB so we can make a translucent bg
+  let r = 136,
+    g = 136,
+    b = 136; // fallback grey
+  const hex = c.match(/^#([0-9a-f]{3,8})$/i);
+  if (hex) {
+    const v = hex[1];
+    if (v.length === 3) {
+      r = parseInt(v[0] + v[0], 16);
+      g = parseInt(v[1] + v[1], 16);
+      b = parseInt(v[2] + v[2], 16);
+    } else {
+      r = parseInt(v.slice(0, 2), 16);
+      g = parseInt(v.slice(2, 4), 16);
+      b = parseInt(v.slice(4, 6), 16);
+    }
+  }
+  return {
+    bg: `rgba(${r},${g},${b},.15)`,
+    bdr: c,
+    tx: c,
+  };
+}
+
+/* Load palette */
+async function loadPalette(signal) {
+  try {
+    const res = await fetch(`${API_URL}?sheet=Palette`, {
+      cache: "no-cache",
+      signal,
+    });
+    if (!res.ok) return;
+    const rows = await res.json();
+    rows.forEach((row) => {
+      const code = String(
+        row.course || row.courseCode || row.code || "",
+      ).trim();
+      const color = String(
+        row.bdr || row.color || row.Color || row.colour || "",
+      ).trim();
+      if (code && color) {
+        PALETTE[code] = buildPaletteEntry(color);
+      }
+    });
+    console.info(
+      "[Exams] Palette loaded:",
+      Object.keys(PALETTE).length,
+      "courses",
+    );
+  } catch (e) {
+    console.warn(
+      "[Exams] Palette fetch failed — using fallback colours. Reason:",
+      e.message,
+    );
+  }
+}
+
+function pal(code) {
+  return (
+    PALETTE[code] || { bg: "rgba(255,255,255,.08)", bdr: "#888", tx: "#aaa" }
+  );
+}
+
+/* ══════════════════════════════════════════
+   DATE HELPERS
+══════════════════════════════════════════ */
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+const MFULL = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+const WEEKDAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+function parseDate(str) {
+  // expects "YYYY-MM-DD"
+  const [y, m, d] = str.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+function parseDateTime(dateStr, timeStr) {
+  // dateStr: "YYYY-MM-DD", timeStr: "HH:MM" 24h
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const [h, min] = timeStr.split(":").map(Number);
+  return new Date(y, m - 1, d, h, min, 0);
+}
+function fmtDate(d) {
+  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+function fmtTime12(t) {
+  const [h, m] = t.split(":").map(Number);
+  const ampm = h >= 12 ? "PM" : "AM",
+    hh = h % 12 || 12;
+  return `${hh}:${String(m).padStart(2, "0")} ${ampm}`;
+}
+function dayOfWeek(d) {
+  return WEEKDAYS[d.getDay()];
+}
+function isToday(dateStr) {
+  const d = parseDate(dateStr),
+    n = new Date();
+  return (
+    d.getFullYear() === n.getFullYear() &&
+    d.getMonth() === n.getMonth() &&
+    d.getDate() === n.getDate()
+  );
+}
+function isPast(dateStr, timeStr) {
+  const target = timeStr ? parseDateTime(dateStr, timeStr) : parseDate(dateStr);
+  // for dates without time, treat whole day as past if tomorrow
+  if (!timeStr) {
+    const d = parseDate(dateStr);
+    d.setDate(d.getDate() + 1);
+    return new Date() > d;
+  }
+  return new Date() > target;
+}
+function daysUntil(dateStr) {
+  const d = parseDate(dateStr);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  d.setHours(0, 0, 0, 0);
+  return Math.round((d - now) / (1000 * 60 * 60 * 24));
+}
+
+const FALLBACK_TUTORIAL = [];
+
+let TUTORIAL_EXAMS = [];
+
+const FALLBACK_FINAL = [];
+
+let FINAL_EXAMS = [];
+
+/* ══════════════════════════════════════════
+   COUNTDOWN ENGINE
+══════════════════════════════════════════ */
+function buildCountdown(exams, getTarget, wrapId, listId, isFinal) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+
+  // find next upcoming
+  const now = new Date();
+  const upcoming = exams
+    .map((e) => ({ ...e, _target: getTarget(e) }))
+    .filter((e) => e._target > now)
+    .sort((a, b) => a._target - b._target);
+  const next = upcoming[0];
+
+  /* ── big countdown card ── */
+  const card = document.createElement("div");
+  card.className = "countdown-card";
+
+  if (!next) {
+    card.innerHTML = `<div class="no-upcoming" style="width:100%">✓ All exams completed — great work!</div>`;
+  } else {
+    const c = pal(next.course);
+    card.innerHTML = `
+      <div class="cc-label">
+        <div class="cc-next">Next Upcoming Exam</div>
+        <div class="cc-name">${next.name}</div>
+        <div class="cc-code" style="background:${c.bg};border:1px solid ${c.bdr};color:${c.tx}">${next.course}</div>
+        <div class="cc-meta">
+          📅 <span>${dayOfWeek(next._target)}, ${fmtDate(next._target)}</span><br>
+          ${isFinal ? `⏰ <span>${fmtTime12(next.startTime)}</span><br>📍 <span>${next.room}</span>` : `👤 <span>${next.teacher}</span>`}
+        </div>
+      </div>
+      <div class="dials" id="${wrapId}-dials" aria-live="polite" aria-label="Countdown timer">
+        <div class="dial"><div class="dial-num" id="${wrapId}-d">00</div><div class="dial-lbl">Days</div></div>
+        <div class="dial-sep">:</div>
+        <div class="dial"><div class="dial-num" id="${wrapId}-h">00</div><div class="dial-lbl">Hours</div></div>
+        <div class="dial-sep">:</div>
+        <div class="dial"><div class="dial-num" id="${wrapId}-m">00</div><div class="dial-lbl">Mins</div></div>
+        <div class="dial-sep">:</div>
+        <div class="dial"><div class="dial-num" id="${wrapId}-s">00</div><div class="dial-lbl">Secs</div></div>
+      </div>
+    `;
+
+    /* live tick */
+    function tick() {
+      const diff = next._target - new Date();
+      if (diff <= 0) {
+        renderCard();
+        return;
+      }
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins = Math.floor((diff % 3600000) / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      const set = (id, v) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = String(v).padStart(2, "0");
+      };
+      set(`${wrapId}-d`, days);
+      set(`${wrapId}-h`, hours);
+      set(`${wrapId}-m`, mins);
+      set(`${wrapId}-s`, secs);
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  wrap.appendChild(card);
+
+  /* ── upcoming mini list ── */
+  if (exams.length > 0) {
+    const listTitle = document.createElement("div");
+    listTitle.className = "sec-hd";
+    listTitle.style.marginTop = "8px";
+    listTitle.innerHTML = `<span class="sec-tag">// All ${isFinal ? "Final" : "Tutorial"} Exams</span><div class="sec-ln"></div>`;
+    wrap.appendChild(listTitle);
+
+    const list = document.createElement("div");
+    list.className = "upcoming-list";
+    const sorted = [...exams].sort((a, b) => getTarget(a) - getTarget(b));
+    sorted.forEach((e, i) => {
+      const target = getTarget(e);
+      const past = target < now;
+      const todayE = isToday(e.date);
+      const isNext = next && target.getTime() === next._target.getTime();
+      const du = daysUntil(e.date);
+      const c = pal(e.course);
+
+      const item = document.createElement("div");
+      item.className = `upc-item${isNext ? " next-up" : ""}${past ? " " : ""}`;
+
+      let statusHtml = "";
+      if (past) statusHtml = `<span class="done-tag">Done ✓</span>`;
+      else if (todayE)
+        statusHtml = `<span class="upc-days" style="color:#42C88C">TODAY</span>`;
+      else if (isNext)
+        statusHtml = `<span class="upc-days" style="color:var(--or)">Next · ${du}d away</span>`;
+      else
+        statusHtml = `<span class="upc-days" style="color:var(--txd)">${du}d away</span>`;
+
+      item.innerHTML = `
+        <span class="upc-code" style="background:${c.bg};border:1px solid ${c.bdr};color:${c.tx}">${e.course}</span>
+        <span class="upc-name">${e.name}</span>
+        <span class="upc-date">${dayOfWeek(target).slice(0, 3)}, ${fmtDate(target)}${isFinal ? ` · ${fmtTime12(e.startTime)}` : ""}</span>
+        ${statusHtml}
+      `;
+      list.appendChild(item);
+    });
+    wrap.appendChild(list);
+  }
+}
+
+/* ══════════════════════════════════════════
+   TUTORIAL CARD RENDERER
+══════════════════════════════════════════ */
+function renderTutorialGrid() {
+  const grid = document.getElementById("tut-grid");
+  if (!grid) return;
+  const sorted = [...TUTORIAL_EXAMS].sort(
+    (a, b) => parseDate(a.date) - parseDate(b.date),
+  );
+  sorted.forEach((e) => {
+    const d = parseDate(e.date);
+    const c = pal(e.course);
+    const past = isPast(e.date);
+    const tod = isToday(e.date);
+
+    let statusHtml;
+    if (tod)
+      statusHtml = `<div class="tut-status today"><div class="mode-dot" style="background:#42C88C"></div>Today!</div>`;
+    else if (past)
+      statusHtml = `<div class="tut-status done">✓ Completed</div>`;
+    else
+      statusHtml = `<div class="tut-status upcoming"><div class="mode-dot"></div>Upcoming · ${daysUntil(e.date)}d</div>`;
+
+    const card = document.createElement("div");
+    card.className = `tut-card${past && !tod ? " past" : ""}`;
+    card.style.borderColor =
+      past && !tod ? "rgba(255,255,255,.05)" : `${c.bdr}40`;
+    card.innerHTML = `
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${c.bdr};opacity:${past ? ".3" : "1"}"></div>
+      <div class="tut-date-block">
+        <div class="tut-day-num">${String(d.getDate()).padStart(2, "0")}</div>
+        <div class="tut-day-right">
+          <div class="tut-day-name">${WEEKDAYS[d.getDay()]}</div>
+          <div class="tut-month">${MFULL[d.getMonth()]} ${d.getFullYear()}</div>
+        </div>
+      </div>
+      <div class="tut-course-code" style="background:${c.bg};border:1px solid ${c.bdr};color:${c.tx}">${e.course}</div>
+      <div class="tut-course-name">${e.name}</div>
+      <div class="tut-meta">
+        👤 <span>${e.teacher}</span><br>
+        📝 Marks: <span>${e.marks}</span><br>
+        📌 <span style="color:var(--txd);font-size:10px">${e.notes}</span>
+      </div>
+      ${statusHtml}
+    `;
+    grid.appendChild(card);
+  });
+}
+
+/* ══════════════════════════════════════════
+   FINAL EXAM TABLE RENDERER
+══════════════════════════════════════════ */
+function renderFinalTable() {
+  const tbody = document.getElementById("fin-tbody");
+  if (!tbody) return;
+  const sorted = [...FINAL_EXAMS].sort(
+    (a, b) => parseDate(a.date) - parseDate(b.date),
+  );
+  const now = new Date();
+  sorted.forEach((e) => {
+    const d = parseDate(e.date);
+    const end = new Date(
+      parseDateTime(e.date, e.startTime).getTime() + e.duration * 60000,
+    );
+    const past = end < now;
+    const tod = isToday(e.date);
+    const isNow =
+      tod &&
+      new Date() >= parseDateTime(e.date, e.startTime) &&
+      new Date() < end;
+    const c = pal(e.course);
+    const dur = `${Math.floor(e.duration / 60)}h${e.duration % 60 ? ` ${e.duration % 60}m` : ""}`;
+    const endT = `${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}`;
+
+    let statusHtml;
+    if (isNow)
+      statusHtml = `<span class="f-status-pill today">In Progress</span>`;
+    else if (tod) statusHtml = `<span class="f-status-pill today">Today</span>`;
+    else if (past)
+      statusHtml = `<span class="f-status-pill done">Done ✓</span>`;
+    else
+      statusHtml = `<span class="f-status-pill upcoming">${daysUntil(e.date)}d away</span>`;
+
+    const tr = document.createElement("tr");
+    tr.className = `${tod ? "today-row" : ""}${past && !tod ? " past-row" : ""}`;
+    tr.innerHTML = `
+      <td>
+        <div class="f-date-cell">
+          <span class="f-date-main">${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}</span>
+          <span class="f-date-day">${WEEKDAYS[d.getDay()]}</span>
+        </div>
+      </td>
+      <td><span class="f-code-pill" style="background:${c.bg};border:1px solid ${c.bdr};color:${c.tx}">${e.course}</span></td>
+      <td style="font-family:var(--m1);font-size:13px;color:#fff">${e.name}</td>
+      <td>
+        <div class="f-time-cell">
+          <span class="f-time-main">${fmtTime12(e.startTime)} – ${fmtTime12(endT)}</span>
+          <span class="f-time-dur">${dur}</span>
+        </div>
+      </td>
+      <td><span class="f-room">${e.room}</span></td>
+      <td>${statusHtml}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbxocBxiKrYnxL_Z7DmlDZID-3BE1jpOBZ8pBhhtLDIF7toILjyFEPFRWYcxK5ZxN9tsfw/exec";
+
+/* ══════════════════════════════════════════════════════════
+   LOADING STATE HELPERS
+══════════════════════════════════════════════════════════ */
+function showLoading() {
+  document.getElementById("es-loading").style.display = "flex";
+  document.getElementById("es-error").style.display = "none";
+  document.getElementById("es-main").style.display = "none";
+}
+function showError() {
+  document.getElementById("es-loading").style.display = "none";
+  document.getElementById("es-error").style.display = "block";
+  document.getElementById("es-main").style.display = "none";
+}
+function showMain() {
+  document.getElementById("es-loading").style.display = "none";
+  document.getElementById("es-error").style.display = "none";
+  document.getElementById("es-main").style.display = "block";
+}
+
+function normDate(v) {
+  if (!v) return "";
+  const s = String(v).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  const dm = s.match(/(\w{3})\s+(\d{1,2})\s+(\d{4})/);
+  if (dm) {
+    const mo = {
+      Jan: "01",
+      Feb: "02",
+      Mar: "03",
+      Apr: "04",
+      May: "05",
+      Jun: "06",
+      Jul: "07",
+      Aug: "08",
+      Sep: "09",
+      Oct: "10",
+      Nov: "11",
+      Dec: "12",
+    };
+    return (
+      dm[3] + "-" + (mo[dm[1]] || "01") + "-" + String(dm[2]).padStart(2, "0")
+    );
+  }
+  return s;
+}
+function normTime(v) {
+  if (!v) return "09:00";
+  const s = String(v).trim();
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(s)) {
+    const p = s.split(":");
+    return String(parseInt(p[0])).padStart(2, "0") + ":" + p[1];
+  }
+  const tm = s.match(/(\d{1,2}):(\d{2}):\d{2}/);
+  if (tm) return String(parseInt(tm[1])).padStart(2, "0") + ":" + tm[2];
+  return "09:00";
+}
+
+async function loadExams() {
+  showLoading();
+
+  try {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), 15000);
+
+    await loadPalette(ctrl.signal);
+
+    const [tutRes, finRes, setRes] = await Promise.all([
+      fetch(`${API_URL}?sheet=TutorialExams`, {
+        cache: "no-cache",
+        signal: ctrl.signal,
+      }),
+      fetch(`${API_URL}?sheet=FinalExams`, {
+        cache: "no-cache",
+        signal: ctrl.signal,
+      }),
+      fetch(`${API_URL}?sheet=Settings`, {
+        cache: "no-cache",
+        signal: ctrl.signal,
+      }),
+    ]);
+    clearTimeout(tid);
+
+    if (!tutRes.ok) throw new Error(`TutorialExams HTTP ${tutRes.status}`);
+    if (!finRes.ok) throw new Error(`FinalExams HTTP ${finRes.status}`);
+
+    const tutRows = await tutRes.json();
+    const finRows = await finRes.json();
+    const setRows = await setRes.json().catch(() => []);
+
+    TUTORIAL_EXAMS = tutRows
+      .filter((r) => r.date && r.course)
+      .map((r) => ({
+        date: normDate(r.date),
+        course: String(r.course || "").trim(),
+        name: String(r.name || "").trim(),
+        teacher: String(r.teacher || "").trim(),
+        marks: String(r.marks || "").trim(),
+        notes: String(r.notes || "").trim(),
+      }));
+
+    FINAL_EXAMS = finRows
+      .filter((r) => r.date && r.course)
+      .map((r) => ({
+        date: normDate(r.date),
+        startTime: normTime(r.startTime),
+        duration: Number(r.duration) || 180,
+        course: String(r.course || "").trim(),
+        name: String(r.name || "").trim(),
+        room: String(r.room || "").trim(),
+      }));
+
+    // Read examMode from Settings tab (default: tutorial)
+    const modeSetting = Array.isArray(setRows)
+      ? setRows.find(
+          (r) =>
+            String(r.key || "")
+              .trim()
+              .toLowerCase() === "exammode",
+        )
+      : null;
+    const mode = modeSetting
+      ? String(modeSetting.value).trim().toLowerCase()
+      : "tutorial";
+
+    // Update semester text from Settings
+    const semRow = Array.isArray(setRows)
+      ? setRows.find(
+          (r) =>
+            String(r.key || "")
+              .trim()
+              .toLowerCase() === "semester",
+        )
+      : null;
+    if (semRow && semRow.value) {
+      const sem = String(semRow.value).trim();
+      if (sem)
+        document.querySelectorAll("[data-semester]").forEach((el) => {
+          el.textContent = sem;
+        });
+      console.info("[Exams] Semester:", sem);
+    }
+
+    showMain();
+    initExams(mode);
+  } catch (err) {
+    console.warn(
+      "[Exams] Sheet load failed — using fallback. Reason:",
+      err.message,
+    );
+    TUTORIAL_EXAMS = FALLBACK_TUTORIAL;
+    FINAL_EXAMS = FALLBACK_FINAL;
+    showMain();
+    initExams("tutorial");
+  }
+}
+
+/* ══════════════════════════════════════════
+   INIT — shows the correct section based on mode string
+═══════════════════════════════════════════ */
+function initExams(mode) {
+  mode = (mode || "tutorial").toLowerCase().trim();
+  console.info("[Exams] Mode:", mode);
+
+  const tutSec = document.getElementById("section-tutorial");
+  const finSec = document.getElementById("section-final");
+
+  if (mode === "final") {
+    if (tutSec) tutSec.style.display = "none";
+    if (finSec) finSec.style.display = "";
+    buildCountdown(
+      FINAL_EXAMS,
+      (e) => parseDateTime(e.date, e.startTime),
+      "fin-countdown-wrap",
+      "fin-list",
+      true,
+    );
+    renderFinalTable();
+  } else {
+    // default: tutorial
+    if (finSec) finSec.style.display = "none";
+    if (tutSec) tutSec.style.display = "";
+    buildCountdown(
+      TUTORIAL_EXAMS,
+      (e) => parseDate(e.date),
+      "tut-countdown-wrap",
+      "tut-list",
+      false,
+    );
+    renderTutorialGrid();
+  }
+}
+
+loadExams();
