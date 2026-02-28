@@ -302,8 +302,6 @@ nav.mob a:hover {
   overflow: hidden;
 }
 
-/* ── REPLACE THIS with your actual group photo ──
-   Set background-image to your photo URL here    */
 .photo-bg {
   position: absolute;
   inset: 0;
@@ -320,7 +318,6 @@ nav.mob a:hover {
   justify-content: center;
 }
 
-/* Placeholder grid — remove when you have a real photo */
 .photo-placeholder {
   position: absolute;
   inset: 0;
@@ -377,7 +374,6 @@ nav.mob a:hover {
   letter-spacing: 3px;
 }
 
-/* ── Photo instructions box ── */
 .photo-hint {
   position: absolute;
   top: 50%;
@@ -423,7 +419,6 @@ nav.mob a:hover {
   letter-spacing: 1px;
 }
 
-/* overlay gradient — fades photo into content below */
 .photo-frame::after {
   content: "";
   position: absolute;
@@ -574,8 +569,6 @@ nav.mob a:hover {
   gap: clamp(32px, 6vw, 80px);
   align-items: center;
 }
-/* .ety-left {
-} */
 .ety-tag {
   font-family: var(--m2);
   font-size: 10px;
@@ -633,8 +626,6 @@ nav.mob a:hover {
   margin-bottom: 28px;
 }
 
-/* .ety-right {
-} */
 .ety-card {
   background: rgba(255, 107, 0, 0.04);
   border: 1px solid rgba(255, 107, 0, 0.12);
@@ -904,8 +895,7 @@ nav.mob a:hover {
   gap: clamp(32px, 6vw, 88px);
   align-items: start;
 }
-/* .ab-left {
-} */
+
 .ab-tag {
   font-family: var(--m2);
   font-size: 10px;
@@ -983,9 +973,6 @@ nav.mob a:hover {
   font-size: 12px;
   margin-bottom: 2px;
 }
-/* 
-.ab-right {
-} */
 .ab-para {
   font-family: var(--m1);
   font-size: clamp(14px, 2vw, 16px);

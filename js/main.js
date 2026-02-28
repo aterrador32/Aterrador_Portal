@@ -1,6 +1,5 @@
 "use strict";
 
-/* Year */
 document.getElementById("yr").textContent = new Date().getFullYear();
 
 /* ── Hamburger ── */
@@ -35,7 +34,7 @@ document.addEventListener("keydown", (e) => {
     toggleMenu(false);
 });
 
-// Close on nav link click (mobile)
+// Close on nav (mobile)
 mobNav
   .querySelectorAll("a")
   .forEach((a) => a.addEventListener("click", () => toggleMenu(false)));
@@ -80,12 +79,6 @@ if (window.matchMedia("(hover:hover)").matches) {
   });
 }
 
-/* ══════════════════════════════════════════════════════════
-   SEMESTER — pulled from Settings sheet
-   key: semester   value: e.g. "5th Semester"
-   Updates every [data-semester] element on the page.
-══════════════════════════════════════════════════════════ */
-
 (async function loadSemester() {
   if (window.location.protocol === "file:") return;
   try {
@@ -110,7 +103,5 @@ if (window.matchMedia("(hover:hover)").matches) {
       el.textContent = sem;
     });
     console.info("[Index] Semester set to:", sem);
-  } catch (e) {
-    /* silent — hardcoded fallback stays */
-  }
+  } catch (e) {}
 })();

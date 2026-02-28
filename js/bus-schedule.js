@@ -80,7 +80,6 @@ function applyConfig(cfg) {
     el.textContent = semester;
   });
 
-  // ── Wire up all buttons ──
   const openBtn = document.getElementById("open-btn");
   const downloadBtn = document.getElementById("download-btn");
   const fullBtn = document.getElementById("fullscreen-btn");
@@ -98,7 +97,6 @@ function applyConfig(cfg) {
   const blocked = document.getElementById("pdf-blocked");
 
   if (!embedUrl) {
-    // No embed URL configured yet
     if (frame) frame.style.display = "none";
     if (blocked) {
       blocked.style.display = "flex";
@@ -113,7 +111,6 @@ function applyConfig(cfg) {
     return;
   }
 
-  // Set iframe src and detect if it gets blocked
   if (frame) frame.src = embedUrl;
 
   setTimeout(() => {

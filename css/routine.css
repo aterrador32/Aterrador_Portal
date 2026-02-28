@@ -353,8 +353,6 @@ nav.mob a:hover {
   flex-wrap: wrap;
   gap: 20px;
 }
-/* .pb-left {
-} */
 .pb-eye {
   font-family: var(--m2);
   font-size: 10px;
@@ -625,7 +623,7 @@ nav.mob a:hover {
 
 /* time slot rows */
 .tt-row {
-  display: contents; /* children participate in parent grid */
+  display: contents;
 }
 
 /* time label cell */

@@ -45,7 +45,7 @@ function buildPaletteEntry(colorStr) {
   // Parse hex to RGB so we can make a translucent bg
   let r = 136,
     g = 136,
-    b = 136; // fallback grey
+    b = 136;
   const hex = c.match(/^#([0-9a-f]{3,8})$/i);
   if (hex) {
     const v = hex[1];
@@ -576,7 +576,7 @@ async function loadExams() {
 }
 
 /* ══════════════════════════════════════════
-   INIT — shows the correct section based on mode string
+   INIT — correct section based on mode
 ═══════════════════════════════════════════ */
 function initExams(mode) {
   mode = (mode || "tutorial").toLowerCase().trim();

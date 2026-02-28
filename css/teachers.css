@@ -555,8 +555,6 @@ input.sinput:focus {
   letter-spacing: 0.5px;
 }
 
-/* .c-name-block {
-} */
 .c-name {
   font-family: var(--m2);
   font-size: 13.5px;

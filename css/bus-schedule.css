@@ -324,8 +324,6 @@ nav.mob a:hover {
   flex-wrap: wrap;
   gap: 20px;
 }
-/* .ban-left {
-} */
 .ban-eye {
   font-family: var(--m2);
   font-size: 10px;

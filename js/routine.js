@@ -39,10 +39,6 @@ window.addEventListener(
 );
 
 /* ══════════════════════════════════════════════════════════
-   CONFIG — paste the real URL here
-══════════════════════════════════════════════════════════ */
-
-/* ══════════════════════════════════════════════════════════
    TIMETABLE CONSTANTS
 ══════════════════════════════════════════════════════════ */
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
@@ -59,24 +55,10 @@ function todayName() {
   return DAY_NAMES_FULL[new Date().getDay()];
 }
 
-/* ══════════════════════════════════════════════════════════
-   FALLBACK COURSE PALETTE
-   Used when API not reachable or Palette sheet not present.
-   Keys match the "course" column in your Routine sheet.
-   To add a new course, add a row in the "Palette" sheet tab.
-   bg  = rgba background   bdr = border/dot colour   tx = text colour
-══════════════════════════════════════════════════════════ */
 const FALLBACK_PALETTE = {
-  "CSE 303": { bg: "rgba(255,107,0,.18)", bdr: "#FF6B00", tx: "#FF6B00" },
-  "CSE 304": { bg: "rgba(255,107,0,.18)", bdr: "#FF6B00", tx: "#FF6B00" },
-  "CSE 305": { bg: "rgba(100,200,255,.16)", bdr: "#64C8FF", tx: "#64C8FF" },
-  "CSE 307": { bg: "rgba(100,160,255,.16)", bdr: "#64A0FF", tx: "#64A0FF" },
-  "CSE 309": { bg: "rgba(220,100,255,.16)", bdr: "#DC64FF", tx: "#DC64FF" },
-  "CSE 310": { bg: "rgba(220,100,255,.16)", bdr: "#DC64FF", tx: "#DC64FF" },
-  "CSE 311": { bg: "rgba(255,200,60,.16)", bdr: "#FFC83C", tx: "#FFC83C" },
-  "CSE 312": { bg: "rgba(66,200,140,.16)", bdr: "#42C88C", tx: "#42C88C" },
-  "CSE 314": { bg: "rgba(255,160,60,.16)", bdr: "#FFA03C", tx: "#FFA03C" },
-  "Econ 301": { bg: "rgba(160,220,80,.16)", bdr: "#A0DC50", tx: "#A0DC50" },
+  "CSE 001": { bg: "rgba(255,107,0,.18)", bdr: "#FF6B00", tx: "#FF6B00" },
+  "CSE 002": { bg: "rgba(255,107,0,.18)", bdr: "#FF6B00", tx: "#FF6B00" },
+  "CSE 003": { bg: "rgba(100,200,255,.16)", bdr: "#64C8FF", tx: "#64C8FF" },
   LAB: { bg: "rgba(255,80,80,.16)", bdr: "#FF5050", tx: "#FF5050" },
 };
 
@@ -97,149 +79,147 @@ function pal(code) {
 }
 
 /* ══════════════════════════════════════════════════════════
-   FALLBACK SCHEDULE — actual batch routine
-   (used when API unreachable or not yet configured)
+   FALLBACK SCHEDULE 
 ══════════════════════════════════════════════════════════ */
 const FALLBACK_SCHEDULE = [
   {
     day: "Sunday",
     start: "09:00",
     end: "10:20",
-    course: "CSE 303",
-    name: "Computer Graphics",
-    teacher: "Morium Akhter",
-    room: "202",
+    course: "CSE 001",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
     type: "Theory",
   },
   {
     day: "Sunday",
     start: "10:25",
     end: "11:45",
-    course: "CSE 304",
-    name: "Computer Graphics Lab",
-    teacher: "Amina, Morium",
-    room: "LAB-203",
-    type: "Lab",
+    course: "CSE 002",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
+    type: "Theory",
   },
   {
     day: "Sunday",
     start: "14:00",
     end: "15:20",
-    course: "CSE 307",
-    name: "Computational Geometry",
-    teacher: "Masum Bhuiyan",
-    room: "102",
+    course: "CSE 003",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
     type: "Theory",
   },
   {
     day: "Monday",
     start: "10:25",
     end: "11:45",
-    course: "CSE 307",
-    name: "Computational Geometry",
-    teacher: "Masum Bhuiyan",
-    room: "102",
+    course: "CSE 001",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
     type: "Theory",
   },
   {
     day: "Monday",
     start: "11:50",
     end: "13:10",
-    course: "CSE 309",
-    name: "Operating System",
-    teacher: "ASMMR Choyon",
-    room: "101",
+    course: "CSE 003",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
     type: "Theory",
   },
   {
     day: "Monday",
     start: "14:00",
     end: "16:45",
-    course: "CSE 310",
-    name: "Operating System Lab",
-    teacher: "ASMMR Choyon",
-    room: "LAB-203",
+    course: "CSE 001",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
     type: "Lab",
   },
   {
     day: "Tuesday",
     start: "09:00",
     end: "10:20",
-    course: "CSE 303",
-    name: "Computer Graphics",
-    teacher: "Morium Akhter",
-    room: "202",
+    course: "CSE 002",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
     type: "Theory",
   },
   {
     day: "Tuesday",
     start: "10:25",
     end: "13:10",
-    course: "CSE 311",
-    name: "OOAD",
-    teacher: "Sarnali, Musfique",
-    room: "LAB-201",
+    course: "CSE 001",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
     type: "Theory",
   },
   {
     day: "Tuesday",
     start: "14:00",
     end: "15:20",
-    course: "CSE 305",
-    name: "Computer Architecture",
-    teacher: "Jugal Krishna",
-    room: "101",
-    type: "Theory",
+    course: "CSE 003",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
+    type: "Lab",
   },
   {
     day: "Wednesday",
     start: "09:00",
     end: "10:20",
-    course: "CSE 305",
-    name: "Computer Architecture",
-    teacher: "Jugal Krishna",
-    room: "101",
+    course: "CSE 001",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
     type: "Theory",
   },
   {
     day: "Wednesday",
     start: "10:25",
     end: "16:45",
-    course: "CSE 312",
-    name: "Web Design Lab",
-    teacher: "Rafsan, Shovon",
-    room: "LAB-302",
-    type: "Lab",
+    course: "CSE 002",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
+    type: "Theory",
   },
   {
     day: "Thursday",
     start: "11:50",
     end: "13:10",
-    course: "CSE 309",
-    name: "Operating System",
-    teacher: "ASMMR Choyon",
-    room: "101",
+    course: "CSE 003",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
     type: "Theory",
   },
   {
     day: "Thursday",
     start: "14:00",
     end: "15:20",
-    course: "Econ 301",
-    name: "Economics",
-    teacher: "Anonymous",
-    room: "102",
+    course: "CSE 001",
+    name: "Computer",
+    teacher: "Dr. X",
+    room: "000",
     type: "Theory",
   },
 ];
 
-let SCHEDULE = []; // populated by loadRoutine()
+let SCHEDULE = [];
 
 /* ══════════════════════════════════════════════════════════
    TIME HELPERS
 ══════════════════════════════════════════════════════════ */
 function toMin(t) {
-  // Handles both "09:00" and "9:00:00" (Google Sheets quirk)
   if (!t) return 0;
   const parts = String(t).trim().split(":").map(Number);
   return parts[0] * 60 + (parts[1] || 0);
@@ -257,7 +237,7 @@ function nowMin() {
   return n.getHours() * 60 + n.getMinutes();
 }
 
-/* ── grid time range — recomputed from SCHEDULE in initTimetable() ── */
+/* ── grid time range ── */
 let GRID_START = 480;
 let GRID_END = 1020;
 let GRID_SPAN = GRID_END - GRID_START;
@@ -462,7 +442,7 @@ function showMain() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   INIT — called after SCHEDULE and PALETTE are populated
+   INIT 
 ══════════════════════════════════════════════════════════ */
 function initTimetable() {
   if (!SCHEDULE.length) {
@@ -483,28 +463,6 @@ function initTimetable() {
   setInterval(() => drawNowLine(), 30000);
 }
 
-/* ══════════════════════════════════════════════════════════
-   DATA LOADER
-   Fetches Routine + Palette sheets in parallel.
-   Falls back gracefully on any error.
-
-   "Palette" sheet columns:
-     course | bg | bdr | tx
-     e.g.: CSE 303 | rgba(255,107,0,.18) | #FF6B00 | #FF6B00
-
-   "Routine" sheet columns:
-     day | start | end | course | name | teacher | room | type
-══════════════════════════════════════════════════════════ */
-/* ══════════════════════════════════════════════════════════
-   DATA LOADER
-   Uses fetch() with no-cors NOT needed — Apps Script with
-   "Execute as Me / Anyone" does return CORS headers on the
-   final redirect. The issue was JSONP script execution being
-   blocked by CSP. fetch() works fine from any served page.
-
-   If opening as file:// locally, fetch still fails — host
-   the file on Vercel / GitHub Pages / any server.
-══════════════════════════════════════════════════════════ */
 async function loadRoutine() {
   showLoading();
 
@@ -519,11 +477,9 @@ async function loadRoutine() {
     });
     clearTimeout(tid);
     if (res.ok) palRows = await res.json();
-  } catch (e) {
-    // Palette tab missing or slow — silently use fallback colours
-  }
+  } catch (e) {}
 
-  // Load Routine (required)
+  // Load Routine
   try {
     const ctrl = new AbortController();
     const tid = setTimeout(() => ctrl.abort(), 15000);
@@ -579,39 +535,21 @@ async function loadRoutine() {
   }
 }
 
-/* ── normalise time strings from Sheets ──────────────────
-   Handles ALL formats Apps Script can return:
-     "09:00"                      → typed as plain text ✓
-     "9:00:00"                    → plain text with seconds ✓
-     "Sat Dec 30 1899 09:00:00…"  → Date.toString() from old script ✓
-   Extracts HH:MM in every case.
-──────────────────────────────────────────────────────── */
 function normaliseTime(t) {
   if (!t) return "00:00";
   const s = String(t).trim();
 
-  // Format: "Sat Dec 30 1899 09:00:00 GMT+0553 ..."
-  // Apps Script serialised a Date object — extract HH:MM from the time part
   const dateStr = s.match(/\d{4}\s+(\d{1,2}):(\d{2}):\d{2}/);
   if (dateStr) {
     return String(parseInt(dateStr[1])).padStart(2, "0") + ":" + dateStr[2];
   }
 
-  // Format: "09:00" or "9:00" or "9:00:00"
   const parts = s.split(":");
   const h = String(parseInt(parts[0]) || 0).padStart(2, "0");
   const m = String(parseInt(parts[1]) || 0).padStart(2, "0");
   return `${h}:${m}`;
 }
 
-/* ══════════════════════════════════════════════════════════
-   IFRAME EMBED (JU Academic Calendar)
-   iframeReady / iframeBlocked are no longer used via inline
-   onload/onerror (removed to avoid strict CSP errors).
-   Instead we use a simple timeout: if the iframe is still
-   0px tall after 4 s we assume it was blocked and show the
-   fallback message.
-══════════════════════════════════════════════════════════ */
 function iframeReady() {
   /* kept for safety — not called */
 }
@@ -628,7 +566,6 @@ window.addEventListener("load", () => {
   if (!iframe) return;
   setTimeout(() => {
     try {
-      // If cross-origin block, contentDocument is null
       if (
         !iframe.contentDocument ||
         !iframe.contentDocument.body ||
@@ -637,14 +574,13 @@ window.addEventListener("load", () => {
         showCalBlocked();
       }
     } catch (e) {
-      // SecurityError = cross-origin block — show fallback
       showCalBlocked();
     }
   }, 4000);
 });
 
 /* ══════════════════════════════════════════════════════════
-   DYNAMIC LEGEND — updates after palette loads from sheet
+   DYNAMIC LEGEND — updates after palette loads
 ══════════════════════════════════════════════════════════ */
 function renderLegend() {
   const leg = document.querySelector(".legend");
@@ -672,12 +608,6 @@ function renderLegend() {
 /* ── kick off ── */
 loadRoutine();
 
-/* ══════════════════════════════════════════════════════════
-   SEMESTER — loaded from Settings sheet
-   key: semester  →  e.g. "5th Semester"
-   Updates every [data-semester] span on the page.
-   Silent on failure — hardcoded text stays as fallback.
-══════════════════════════════════════════════════════════ */
 (async function loadSettings() {
   if (window.location.protocol === "file:") return;
   try {
@@ -735,7 +665,7 @@ loadRoutine();
           if (sheetLoader) sheetLoader.classList.add("gone");
         };
       }
-      // "Open in Sheets" button — convert /pubhtml or /edit embed URL to a viewable link
+      // "Open in Sheets"
       const viewUrl = sheetEmbed
         .replace("/pubhtml", "/edit")
         .replace("?widget=true&headers=false", "");

@@ -1,7 +1,7 @@
 "use strict";
 document.getElementById("yr").textContent = new Date().getFullYear();
 
-/* ── hamburge ── */
+/* ── hamburger ── */
 const burger = document.getElementById("burger");
 const mob = document.getElementById("mob-nav");
 function tog(f) {
@@ -27,6 +27,8 @@ document.addEventListener("keydown", (e) => {
 mob
   .querySelectorAll("a")
   .forEach((a) => a.addEventListener("click", () => tog(false)));
+
+/* ── scroll shadow ── */
 const hdr = document.querySelector("header");
 window.addEventListener(
   "scroll",
@@ -50,31 +52,3 @@ if (grid) {
     grid.appendChild(d);
   }
 }
-
-/* ── scroll shadow ── */
-const hdr = document.querySelector("header");
-window.addEventListener(
-  "scroll",
-  () => {
-    hdr.style.boxShadow =
-      window.scrollY > 10 ? "0 4px 32px rgba(0,0,0,.6)" : "none";
-  },
-  { passive: true },
-);
-
-/* ── hamburger ── */
-burger.addEventListener("click", () => tog());
-document.addEventListener("click", (e) => {
-  if (
-    mob.classList.contains("open") &&
-    !mob.contains(e.target) &&
-    !burger.contains(e.target)
-  )
-    tog(false);
-});
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") tog(false);
-});
-mob
-  .querySelectorAll("a")
-  .forEach((a) => a.addEventListener("click", () => tog(false)));

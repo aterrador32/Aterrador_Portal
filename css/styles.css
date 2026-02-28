@@ -88,7 +88,7 @@ body::before {
 }
 
 /*===================================================
-  HEADER  –  JU logo LEFT | nav CENTER | batch logo RIGHT
+  HEADER 
 ===================================================*/
 header {
   position: fixed;
@@ -109,7 +109,7 @@ header {
   transition: box-shadow 0.3s;
 }
 
-/* ── LEFT: JU ── */
+/* ── JU ── */
 .hd-ju {
   display: flex;
   align-items: center;
@@ -152,7 +152,7 @@ header {
   font-size: 11px;
 }
 
-/* ── CENTER: nav ── */
+/* ── nav ── */
 nav.desk {
   display: flex;
   align-items: center;
@@ -188,7 +188,7 @@ nav.mob a.cur {
   display: inline-block;
 }
 
-/* ── RIGHT: batch badge ── */
+/* ── batch badge ── */
 .hd-bt {
   display: flex;
   align-items: center;

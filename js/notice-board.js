@@ -164,7 +164,6 @@ function render() {
       n.author
     ).toLowerCase();
 
-    /* action button - dynamic based on hasLink */
     const btnHtml =
       n.hasLink && n.url
         ? `<a class="nc-action-btn" href="${n.url}" target="_blank" rel="noopener noreferrer"
@@ -248,7 +247,7 @@ function render() {
   applyFilters();
 }
 
-/* ── expand / collapse internal notices ── */
+/* ── expand / collapse ── */
 function toggleExpand(id, btn) {
   const exp = document.getElementById(`expand-${id}`);
   const arr = document.getElementById(`arr-${id}`);
@@ -266,7 +265,7 @@ function cardClick(id, url) {
     window.open(url, "_blank", "noopener,noreferrer");
     return;
   }
-  // For internal, just toggle expand on card click too
+  // For internal
   const btn = document.querySelector(`#notice-${id} .nc-action-btn`);
   toggleExpand(id, btn);
 }
@@ -480,7 +479,6 @@ async function loadNotices() {
   }
 }
 
-/* ── kick off ── */
 loadNotices();
 
 (async function loadSemester() {

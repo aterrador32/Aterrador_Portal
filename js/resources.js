@@ -7,11 +7,6 @@ document.getElementById("yr").textContent = new Date().getFullYear();
 const GOOGLE_CLIENT_ID =
   "820667040088-fme7kg1mg93jg33u777idd7jl20927am.apps.googleusercontent.com";
 
-/* ══════════════════════════════════════════════════════════
-   DEV PREVIEW MODE
-   Set true to bypass login for local testing.
-   Set false before deploying to production!
-════════════════════════════════════════════════════════════ */
 const DEV_PREVIEW_MODE = false;
 const DEV_USER = {
   name: "Preview User",
@@ -20,7 +15,7 @@ const DEV_USER = {
 };
 
 /* ══════════════════════════════════════════════════════════
-   ALLOWED EMAIL HASHES (SHA-256 of lowercase email)
+   ALLOWED EMAIL HASHES
 ════════════════════════════════════════════════════════════ */
 const ALLOWED_HASHES = new Set([
   "0d5bbf28e6f1818cd12a7f1b04538a50f800b4bbfbe6c7f70764089e3ba149d1",
@@ -301,7 +296,7 @@ function updateCount() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   RESOURCE LOADER — fetches from Google Sheets
+   RESOURCE LOADER
 ════════════════════════════════════════════════════════════ */
 async function loadResources() {
   const courseList = document.getElementById("course-list");

@@ -37,19 +37,6 @@ window.addEventListener(
   { passive: true },
 );
 
-/* ══════════════════════════════════════════════════════════
-   FALLBACK TEACHER DATA
-   Used when API_URL not set or fetch fails.
-   Keep this in sync with your sheet as a safety net.
-
-   Sheet tab: "Teachers"   Columns:
-     code | course | type | name | designation | desigCat |
-     email | cell | color
-
-   type     → Theory | Lab | Theory & Lab
-   desigCat → professor | associate | assistant | lecturer
-   color    → hex accent e.g. #FF6B00
-══════════════════════════════════════════════════════════ */
 const FALLBACK_DATA = [
   {
     code: "CSE XXX",
