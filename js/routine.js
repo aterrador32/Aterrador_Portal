@@ -41,8 +41,6 @@ window.addEventListener(
 /* ══════════════════════════════════════════════════════════
    CONFIG — paste the real URL here
 ══════════════════════════════════════════════════════════ */
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbxocBxiKrYnxL_Z7DmlDZID-3BE1jpOBZ8pBhhtLDIF7toILjyFEPFRWYcxK5ZxN9tsfw/exec";
 
 /* ══════════════════════════════════════════════════════════
    TIMETABLE CONSTANTS
@@ -89,7 +87,8 @@ let PALETTE = {};
 function pal(code) {
   return (
     PALETTE[code] ||
-    PALETTE["LAB"] || { // if code contains 'lab' in the name
+    PALETTE["LAB"] || {
+      // if code contains 'lab' in the name
       bg: "rgba(255,255,255,.08)",
       bdr: "rgba(255,255,255,.3)",
       tx: "#aaaaaa",
@@ -514,7 +513,7 @@ async function loadRoutine() {
   try {
     const ctrl = new AbortController();
     const tid = setTimeout(() => ctrl.abort(), 5000);
-    const res = await fetch(`${API_URL}?sheet=Palette`, {
+    const res = await fetch(apiUrl("Palette"), {
       cache: "no-cache",
       signal: ctrl.signal,
     });
@@ -528,7 +527,7 @@ async function loadRoutine() {
   try {
     const ctrl = new AbortController();
     const tid = setTimeout(() => ctrl.abort(), 15000);
-    const res = await fetch(`${API_URL}?sheet=Routine`, {
+    const res = await fetch(apiUrl("Routine"), {
       cache: "no-cache",
       signal: ctrl.signal,
     });
@@ -684,7 +683,7 @@ loadRoutine();
   try {
     const ctrl = new AbortController();
     setTimeout(() => ctrl.abort(), 10000);
-    const res = await fetch(API_URL + "?sheet=Settings", {
+    const res = await fetch(apiUrl("Settings"), {
       cache: "no-cache",
       signal: ctrl.signal,
     });

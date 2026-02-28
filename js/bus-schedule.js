@@ -38,9 +38,6 @@ window.addEventListener(
   { passive: true },
 );
 
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbxocBxiKrYnxL_Z7DmlDZID-3BE1jpOBZ8pBhhtLDIF7toILjyFEPFRWYcxK5ZxN9tsfw/exec";
-
 async function loadConfig() {
   if (window.location.protocol === "file:") {
     console.warn(
@@ -54,7 +51,7 @@ async function loadConfig() {
     const ctrl = new AbortController();
     setTimeout(() => ctrl.abort(), 10000);
 
-    const res = await fetch(API_URL + "?sheet=Settings", {
+    const res = await fetch(apiUrl("Settings"), {
       cache: "no-cache",
       signal: ctrl.signal,
     });

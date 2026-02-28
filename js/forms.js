@@ -1,9 +1,6 @@
 "use strict";
 document.getElementById("yr").textContent = new Date().getFullYear();
 
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbxocBxiKrYnxL_Z7DmlDZID-3BE1jpOBZ8pBhhtLDIF7toILjyFEPFRWYcxK5ZxN9tsfw/exec";
-
 const FALLBACK_FORMS = [
   {
     id: "sample-1",
@@ -349,17 +346,8 @@ function showMain() {
 async function loadForms() {
   showLoading();
 
-  if (API_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
-    console.info("[Forms] API_URL not set — using fallback data.");
-    FORMS = FALLBACK_FORMS;
-    showMain();
-    render();
-    setInterval(tick, 1000);
-    return;
-  }
-
   try {
-    const res = await fetch(`${API_URL}?sheet=Forms`, { cache: "no-cache" });
+    const res = await fetch(apiUrl("Forms"), { cache: "no-cache" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const rows = await res.json();
 
@@ -401,7 +389,7 @@ loadForms();
   try {
     const ctrl = new AbortController();
     setTimeout(() => ctrl.abort(), 10000);
-    const res = await fetch(API_URL + "?sheet=Settings", {
+    const res = await fetch(apiUrl("Settings"), {
       cache: "no-cache",
       signal: ctrl.signal,
     });

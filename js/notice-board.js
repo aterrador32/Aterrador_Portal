@@ -37,9 +37,6 @@ window.addEventListener(
   { passive: true },
 );
 
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbxocBxiKrYnxL_Z7DmlDZID-3BE1jpOBZ8pBhhtLDIF7toILjyFEPFRWYcxK5ZxN9tsfw/exec";
-
 const FALLBACK_NOTICES = [
   {
     id: "sample-1",
@@ -429,7 +426,7 @@ async function loadNotices() {
     const ctrl = new AbortController();
     const tid = setTimeout(() => ctrl.abort(), 15000);
 
-    const res = await fetch(API_URL + "?sheet=Notices", {
+    const res = await fetch(apiUrl("Notices"), {
       cache: "no-cache",
       signal: ctrl.signal,
     });
@@ -491,7 +488,7 @@ loadNotices();
   try {
     const ctrl = new AbortController();
     setTimeout(() => ctrl.abort(), 10000);
-    const res = await fetch(API_URL + "?sheet=Settings", {
+    const res = await fetch(apiUrl("Settings"), {
       cache: "no-cache",
       signal: ctrl.signal,
     });

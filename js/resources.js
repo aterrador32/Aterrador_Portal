@@ -7,9 +7,6 @@ document.getElementById("yr").textContent = new Date().getFullYear();
 const GOOGLE_CLIENT_ID =
   "820667040088-fme7kg1mg93jg33u777idd7jl20927am.apps.googleusercontent.com";
 
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbxocBxiKrYnxL_Z7DmlDZID-3BE1jpOBZ8pBhhtLDIF7toILjyFEPFRWYcxK5ZxN9tsfw/exec";
-
 /* ══════════════════════════════════════════════════════════
    DEV PREVIEW MODE
    Set true to bypass login for local testing.
@@ -317,8 +314,8 @@ async function loadResources() {
 
   try {
     const [resRes, senRes] = await Promise.all([
-      fetch(`${API_URL}?sheet=Resources`, { cache: "no-cache" }),
-      fetch(`${API_URL}?sheet=SeniorResources`, { cache: "no-cache" }),
+      fetch(apiUrl("Resources"), { cache: "no-cache" }),
+      fetch(apiUrl("SeniorResources"), { cache: "no-cache" }),
     ]);
     if (!resRes.ok) throw new Error(`Resources HTTP ${resRes.status}`);
     if (!senRes.ok) throw new Error(`SeniorResources HTTP ${senRes.status}`);
@@ -486,7 +483,7 @@ function parseJwt(token) {
 async function checkAccess(user) {
   const email = (user.email || "").toLowerCase().trim();
   try {
-    const msgBuf = new TextEncoder().encode(email);
+    const msgBuf = new TextEncoder().encode(email + EMAIL_SALT);
     const hashBuf = await crypto.subtle.digest("SHA-256", msgBuf);
     const hashHex = Array.from(new Uint8Array(hashBuf))
       .map((b) => b.toString(16).padStart(2, "0"))
@@ -518,7 +515,9 @@ function grantAccess(user) {
     try {
       const buf = await crypto.subtle.digest(
         "SHA-256",
-        new TextEncoder().encode((user.email || "").toLowerCase().trim()),
+        new TextEncoder().encode(
+          (user.email || "").toLowerCase().trim() + EMAIL_SALT,
+        ),
       );
       const hex = Array.from(new Uint8Array(buf))
         .map((b) => b.toString(16).padStart(2, "0"))
@@ -629,7 +628,7 @@ window.addEventListener(
   try {
     const ctrl = new AbortController();
     setTimeout(() => ctrl.abort(), 10000);
-    const res = await fetch(`${API_URL}?sheet=Settings`, {
+    const res = await fetch(apiUrl("Settings"), {
       cache: "no-cache",
       signal: ctrl.signal,
     });

@@ -69,7 +69,7 @@ function buildPaletteEntry(colorStr) {
 /* Load palette */
 async function loadPalette(signal) {
   try {
-    const res = await fetch(`${API_URL}?sheet=Palette`, {
+    const res = await fetch(apiUrl("Palette"), {
       cache: "no-cache",
       signal,
     });
@@ -423,8 +423,6 @@ function renderFinalTable() {
     tbody.appendChild(tr);
   });
 }
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbxocBxiKrYnxL_Z7DmlDZID-3BE1jpOBZ8pBhhtLDIF7toILjyFEPFRWYcxK5ZxN9tsfw/exec";
 
 /* ══════════════════════════════════════════════════════════
    LOADING STATE HELPERS
@@ -494,18 +492,12 @@ async function loadExams() {
     await loadPalette(ctrl.signal);
 
     const [tutRes, finRes, setRes] = await Promise.all([
-      fetch(`${API_URL}?sheet=TutorialExams`, {
+      fetch(apiUrl("TutorialExams"), {
         cache: "no-cache",
         signal: ctrl.signal,
       }),
-      fetch(`${API_URL}?sheet=FinalExams`, {
-        cache: "no-cache",
-        signal: ctrl.signal,
-      }),
-      fetch(`${API_URL}?sheet=Settings`, {
-        cache: "no-cache",
-        signal: ctrl.signal,
-      }),
+      fetch(apiUrl("FinalExams"), { cache: "no-cache", signal: ctrl.signal }),
+      fetch(apiUrl("Settings"), { cache: "no-cache", signal: ctrl.signal }),
     ]);
     clearTimeout(tid);
 

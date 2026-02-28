@@ -37,9 +37,6 @@ window.addEventListener(
   { passive: true },
 );
 
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbxocBxiKrYnxL_Z7DmlDZID-3BE1jpOBZ8pBhhtLDIF7toILjyFEPFRWYcxK5ZxN9tsfw/exec";
-
 /* ══════════════════════════════════════════════════════════
    FALLBACK TEACHER DATA
    Used when API_URL not set or fetch fails.
@@ -263,17 +260,8 @@ function showMain() {
 async function loadTeachers() {
   showLoading();
 
-  if (API_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
-    console.info("[Teachers] API_URL not set — using fallback data.");
-    DATA = FALLBACK_DATA;
-    showMain();
-    renderCards();
-    renderTable();
-    return;
-  }
-
   try {
-    const res = await fetch(`${API_URL}?sheet=Teachers`, { cache: "no-cache" });
+    const res = await fetch(apiUrl("Teachers"), { cache: "no-cache" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const rows = await res.json();
 
@@ -313,7 +301,7 @@ loadTeachers();
   try {
     const ctrl = new AbortController();
     setTimeout(() => ctrl.abort(), 10000);
-    const res = await fetch(API_URL + "?sheet=Settings", {
+    const res = await fetch(apiUrl("Settings"), {
       cache: "no-cache",
       signal: ctrl.signal,
     });

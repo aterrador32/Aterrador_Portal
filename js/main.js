@@ -85,15 +85,13 @@ if (window.matchMedia("(hover:hover)").matches) {
    key: semester   value: e.g. "5th Semester"
    Updates every [data-semester] element on the page.
 ══════════════════════════════════════════════════════════ */
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbxocBxiKrYnxL_Z7DmlDZID-3BE1jpOBZ8pBhhtLDIF7toILjyFEPFRWYcxK5ZxN9tsfw/exec";
 
 (async function loadSemester() {
   if (window.location.protocol === "file:") return;
   try {
     const ctrl = new AbortController();
     setTimeout(() => ctrl.abort(), 10000);
-    const res = await fetch(API_URL + "?sheet=Settings", {
+    const res = await fetch(apiUrl("Settings"), {
       cache: "no-cache",
       signal: ctrl.signal,
     });
