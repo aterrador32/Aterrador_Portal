@@ -15,7 +15,7 @@ document.getElementById("yr").textContent = new Date().getFullYear();
      Case-insensitive matching is applied automatically.
 ════════════════════════════════════════════════════════════ */
 const GOOGLE_CLIENT_ID =
-  "YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com";
+  "820667040088-fme7kg1mg93jg33u777idd7jl20927am.apps.googleusercontent.com";
 
 /* ══════════════════════════════════════════════════════════
    DEV PREVIEW MODE — skip login for local testing
