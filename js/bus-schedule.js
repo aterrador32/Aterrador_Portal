@@ -37,8 +37,33 @@ window.addEventListener(
   },
   { passive: true },
 );
+function showLoading() {
+  const el = document.getElementById("bs-loading");
+  if (el) el.style.display = "flex";
+  const em = document.getElementById("bs-error");
+  if (em) em.style.display = "none";
+  const main = document.getElementById("bs-main");
+  if (main) main.style.display = "none";
+}
+function showError() {
+  const el = document.getElementById("bs-loading");
+  if (el) el.style.display = "none";
+  const em = document.getElementById("bs-error");
+  if (em) em.style.display = "block";
+  const main = document.getElementById("bs-main");
+  if (main) main.style.display = "none";
+}
+function showMain() {
+  const el = document.getElementById("bs-loading");
+  if (el) el.style.display = "none";
+  const em = document.getElementById("bs-error");
+  if (em) em.style.display = "none";
+  const main = document.getElementById("bs-main");
+  if (main) main.style.display = "block";
+}
 
 async function loadConfig() {
+  showLoading();
   if (window.location.protocol === "file:") {
     console.warn(
       "[Bus] Opened as file:// — using placeholder state. Deploy to server for live data.",
@@ -67,11 +92,13 @@ async function loadConfig() {
     applyConfig(cfg);
   } catch (err) {
     console.warn("[Bus] Could not load settings:", err.message);
+    showMain();
     applyConfig({});
   }
 }
 
 function applyConfig(cfg) {
+  showMain();
   const shareLink = cfg.busSchedulePdf || "";
   const embedUrl = cfg.busScheduleEmbed || "";
   const semester = cfg.semester || "5th Semester";

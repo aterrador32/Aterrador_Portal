@@ -561,31 +561,13 @@ function showCalBlocked() {
   if (blocked) blocked.style.display = "flex";
 }
 
-window.addEventListener("load", () => {
-  const iframe = document.getElementById("cal-iframe");
-  if (!iframe) return;
-  setTimeout(() => {
-    try {
-      if (
-        !iframe.contentDocument ||
-        !iframe.contentDocument.body ||
-        iframe.contentDocument.body.innerHTML === ""
-      ) {
-        showCalBlocked();
-      }
-    } catch (e) {
-      showCalBlocked();
-    }
-  }, 4000);
-});
-
 /* ══════════════════════════════════════════════════════════
    DYNAMIC LEGEND — updates after palette loads
 ══════════════════════════════════════════════════════════ */
 function renderLegend() {
   const leg = document.querySelector(".legend");
   if (!leg || !Object.keys(PALETTE).length) return;
-  // Build legend items from PALETTE + SCHEDULE (only courses that appear)
+  // Build legend items
   const used = [...new Set(SCHEDULE.map((s) => s.course))];
   const legTtl = leg.querySelector(".leg-ttl");
   leg.innerHTML = "";
@@ -644,9 +626,12 @@ loadRoutine();
       const calIframe = document.getElementById("cal-iframe");
       const calBtn = document.getElementById("univ-cal-btn");
       const calExt = document.querySelector(".cal-ext-btn");
-      if (calIframe) calIframe.src = univUrl;
-      if (calBtn) calBtn.href = univUrl;
-      if (calExt) calExt.href = univUrl;
+      if (calIframe) {
+        calIframe.src = univUrl;
+        calIframe.setAttribute("allow", "autoplay");
+      }
+      if (calBtn) calBtn.href = univUrl.replace("/preview", "/view");
+      if (calExt) calExt.href = univUrl.replace("/preview", "/view");
       console.info("[Routine] University calendar URL:", univUrl);
     }
 
