@@ -72,13 +72,11 @@
     </nav>
 
     <!-- ══════════════════════════════════════
-     AUTH GATE — shown when NOT signed in why auth
-══════════════════════════════════════ -->
+         AUTH GATE — shown when NOT signed in
+    ══════════════════════════════════════ -->
     <div id="auth-gate" aria-label="Sign in required">
       <div class="ag-glow" aria-hidden="true"></div>
-
       <div class="ag-lock" aria-hidden="true">🔐</div>
-
       <div class="ag-tag">Access Control</div>
       <h1 class="ag-h">Batch <em>Resources</em></h1>
       <p class="ag-sub">
@@ -88,107 +86,400 @@
         slides, question papers, and senior resources.
       </p>
 
-      <!-- Error box (shown on access denied) -->
+      <!-- Error box -->
       <div class="ag-error" id="ag-error" role="alert">
         <div class="ae-title">⛔ Access Denied</div>
         <div class="ae-body" id="ae-body">
           Your email is not on the authorised list. This portal is restricted to
           <strong>ATERRADOR (CSE 52nd Batch)</strong> members only. If you
-          believe this is an error, contact to the authority.
+          believe this is an error, contact the authority.
         </div>
       </div>
 
-     <div class="ag-btn-wrap">
-  <button class="g-signin-btn" id="signin-btn" onclick="startSignIn()">
-    <span class="g-icon">
-      <svg width="22" height="22" viewBox="0 0 48 48">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.34-8.16 2.34-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-        <path fill="none" d="M0 0h48v48H0z"/>
-      </svg>
-    </span>
-    <span class="ag-btn-label">Sign in with Google</span>
-  </button>
-  <div class="ag-hint">
-    Use your authorised edu email only
-    <span>Unauthorised accounts will be rejected</span>
-  </div>
-</div>
+      <!-- Sign-in button -->
+      <div class="ag-btn-wrap">
+        <button class="g-signin-btn" id="signin-btn" onclick="startSignIn()">
+          <span class="g-icon">
+            <svg width="22" height="22" viewBox="0 0 48 48">
+              <path
+                fill="#EA4335"
+                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+              <path
+                fill="#4285F4"
+                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+              <path
+                fill="#FBBC05"
+                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+              <path
+                fill="#34A853"
+                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.34-8.16 2.34-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+              <path fill="none" d="M0 0h48v48H0z" />
+            </svg>
+          </span>
+          <span class="ag-btn-label">Sign in with Google</span>
+        </button>
+        <div class="ag-hint">
+          Use your authorised edu email only
+          <span>Unauthorised accounts will be rejected</span>
+        </div>
+      </div>
 
-      <!-- ── Authorised email grid ── -->
+      <!-- Authorised member grid — pills in ascending order 01→52 -->
       <div class="ag-roster-wrap" aria-label="Authorised members">
-  <div class="ag-roster-hdr">
-    <span class="ag-roster-title">// Authorised Members</span>
-    <span class="ag-roster-count" id="ag-roster-count">52 accounts</span>
-  </div>
-  <div class="ag-roster-grid" id="ag-roster-grid" role="list">
-    <div class="ag-pill" data-hash="b5316e7ad50ca93233b2ee372aebb639a48f6f63954bfd2b55c45ef027e896ba" title="Roll #63" aria-label="Roll #63"><span class="ag-pill-num">01</span></div>
-    <div class="ag-pill" data-hash="63eb428c98cdd0d17c4f0c0df24dd4057af57227def76d1a0b60596ba1d9355c" title="Roll #64" aria-label="Roll #64"><span class="ag-pill-num">02</span></div>
-    <div class="ag-pill" data-hash="bc17edc1aa2cafb931043018c7acb611c8db77d208ae80f096427faafecf55cb" title="Roll #65" aria-label="Roll #65"><span class="ag-pill-num">03</span></div>
-    <div class="ag-pill" data-hash="dd8565bfdebe4ba0a3e6f369ed654cd5a9649e4b1e90034e7d294ea4e190700a" title="Roll #66" aria-label="Roll #66"><span class="ag-pill-num">04</span></div>
-    <div class="ag-pill" data-hash="e8d9938af8488f2fd1bfc640e7dc99b99c351b2dde450218ce25f63729d370ac" title="Roll #67" aria-label="Roll #67"><span class="ag-pill-num">05</span></div>
-    <div class="ag-pill" data-hash="5c0ad97c9375a5d46a99a486db2c78106be872f4b1aef9473b635050fd41b057" title="Roll #68" aria-label="Roll #68"><span class="ag-pill-num">06</span></div>
-    <div class="ag-pill" data-hash="5162535570fce8e40f88baa1dd0f17a275f02a58fb13c590e47e8a94ad514d25" title="Roll #69" aria-label="Roll #69"><span class="ag-pill-num">07</span></div>
-    <div class="ag-pill" data-hash="de9dec27a7d9cf6d58ad4731c1b0b80573387d9425d6b07d53862e0c48baacba" title="Roll #70" aria-label="Roll #70"><span class="ag-pill-num">08</span></div>
-    <div class="ag-pill" data-hash="f9114da7f83aeedc5d307bb43b2a225c65a64af71f6542a3304291624f595b71" title="Roll #71" aria-label="Roll #71"><span class="ag-pill-num">09</span></div>
-    <div class="ag-pill" data-hash="182ecfcb0dba74c77efd514cc1e57d82635dbe2e76633ddfdcaa186caa01ba97" title="Roll #72" aria-label="Roll #72"><span class="ag-pill-num">10</span></div>
-    <div class="ag-pill" data-hash="5dc8ff80c52cee1610193979a6979e33cb36f650e272ea4b4bfc37ec2ff185cf" title="Roll #73" aria-label="Roll #73"><span class="ag-pill-num">11</span></div>
-    <div class="ag-pill" data-hash="ceb9d6027ff62d0326831d57af73620d6b490cf019506b407d2aba4d5b5bf989" title="Roll #74" aria-label="Roll #74"><span class="ag-pill-num">12</span></div>
-    <div class="ag-pill" data-hash="c1239b69484820efa1caa54751162d228c4664bf2147f587dd665397fb00405d" title="Roll #75" aria-label="Roll #75"><span class="ag-pill-num">13</span></div>
-    <div class="ag-pill" data-hash="3ff07472dedf85892c2931c98d6db1acbd2dac7beed9cd7962e61859e27052cd" title="Roll #76" aria-label="Roll #76"><span class="ag-pill-num">14</span></div>
-    <div class="ag-pill" data-hash="12e3a5334454d1b453e5dd0d2e9936421ec50f76dba6e8919bd95b103707ff42" title="Roll #77" aria-label="Roll #77"><span class="ag-pill-num">15</span></div>
-    <div class="ag-pill" data-hash="ad1af8d5fef8d622b5401b846e75ad1786f0d2adb244b912f7a96ecb1a235c37" title="Roll #78" aria-label="Roll #78"><span class="ag-pill-num">16</span></div>
-    <div class="ag-pill" data-hash="53f7293a3751ad0bdc865d6efd113a1b976fa34a1a15e7c708961b67409e787e" title="Roll #79" aria-label="Roll #79"><span class="ag-pill-num">17</span></div>
-    <div class="ag-pill" data-hash="9ff9563c2ea6f34631321ffbebd59e70828f982052e3d52ea8f787b1c10ee0ca" title="Roll #80" aria-label="Roll #80"><span class="ag-pill-num">18</span></div>
-    <div class="ag-pill" data-hash="2893dcb31427b56829ae4744b2fcd2594a54dcb3e8d5447b312110c17955fd4d" title="Roll #81" aria-label="Roll #81"><span class="ag-pill-num">19</span></div>
-    <div class="ag-pill" data-hash="d401c3389afcf90f503535194e6fb900b49b096f7af7084b120a94674b36a11f" title="Roll #83" aria-label="Roll #83"><span class="ag-pill-num">20</span></div>
-    <div class="ag-pill" data-hash="218adca9116b1c4221f4e81cf9a138946a85a2ffd205b44da7e8343bbf0e32e1" title="Roll #84" aria-label="Roll #84"><span class="ag-pill-num">21</span></div>
-    <div class="ag-pill" data-hash="753fb1f44c01fbbc9fcca8d30f4619b9eb63b06823a17477b5cca753e1008fd0" title="Roll #85" aria-label="Roll #85"><span class="ag-pill-num">22</span></div>
-    <div class="ag-pill" data-hash="9f0d0f2c48663e49e857533788417a0a44ead7f8f2cfd54f1a74c87d4abafe9e" title="Roll #86" aria-label="Roll #86"><span class="ag-pill-num">23</span></div>
-    <div class="ag-pill" data-hash="a920749b1631848fdbbf54496b0818b465c18b4cff5c0b93a3e480b548e90a1a" title="Roll #87" aria-label="Roll #87"><span class="ag-pill-num">24</span></div>
-    <div class="ag-pill" data-hash="0bbf321a61426b2039451868c382403eec7351aa54fd57864ea5790619b4a13e" title="Roll #88" aria-label="Roll #88"><span class="ag-pill-num">25</span></div>
-    <div class="ag-pill" data-hash="038bf5935bf0c9a813d38c4aeddaa9347d2547f82debc51508e7d79281ae973c" title="Roll #89" aria-label="Roll #89"><span class="ag-pill-num">26</span></div>
-    <div class="ag-pill" data-hash="316e764c0a580f4e3025b2bc5cc7e6ffb2b0473f2dfde4a84e3461889d25522e" title="Roll #90" aria-label="Roll #90"><span class="ag-pill-num">27</span></div>
-    <div class="ag-pill" data-hash="31db86fd7b7266300b913ba2e14d48a7cc9911245659681ce27d3bf3ec98a7d8" title="Roll #91" aria-label="Roll #91"><span class="ag-pill-num">28</span></div>
-    <div class="ag-pill" data-hash="200f26564f994594e02a58ef52d84ee3063f8d7148a1e2fccbead00dd3185721" title="Roll #92" aria-label="Roll #92"><span class="ag-pill-num">29</span></div>
-    <div class="ag-pill" data-hash="9b4ce00b2e03930ce72a5b1ae46c1582f888cd30ad722a8ca7771aecc4cbc7c9" title="Roll #93" aria-label="Roll #93"><span class="ag-pill-num">30</span></div>
-    <div class="ag-pill" data-hash="209fc20ff31a8ca53300f103fa52c614db913af9712abb1e8c584b188325fe95" title="Roll #94" aria-label="Roll #94"><span class="ag-pill-num">31</span></div>
-    
-    <!-- Roll 95 skipped (not in batch) -->
-    
-    <!-- Rolls 96-114 (19 members) → Numbers 32-50 -->
-    <div class="ag-pill" data-hash="a2d6ed5159be330e9cf76c26288e743b778b359c8b33fc591a33d7d32fec6cd3" title="Roll #96" aria-label="Roll #96"><span class="ag-pill-num">32</span></div>
-    <div class="ag-pill" data-hash="399f0aeb09f01ffda87bd2a0d9071b5e4febc30626f338355e5b2733a2215a38" title="Roll #97" aria-label="Roll #97"><span class="ag-pill-num">33</span></div>
-    <div class="ag-pill" data-hash="2259d46817890b8fad2888b960e40a35d048325e6f7cf331ef5b22e05fac06a0" title="Roll #98" aria-label="Roll #98"><span class="ag-pill-num">34</span></div>
-    <div class="ag-pill" data-hash="75cc68f42a0ab7abebdfa424181008ee87a42f6ceb4f86755f9d884cee61a0ff" title="Roll #99" aria-label="Roll #99"><span class="ag-pill-num">35</span></div>
-    <div class="ag-pill" data-hash="f8c275c2adf6b37e88a9b1685f13ece4842ae981315248a10b73b73bc4d401c9" title="Roll #100" aria-label="Roll #100"><span class="ag-pill-num">36</span></div>
-    <div class="ag-pill" data-hash="662b6c5bfb9f8bd55f240dce6c89a47c781cabf1d594e347056835bc4f094bca" title="Roll #101" aria-label="Roll #101"><span class="ag-pill-num">37</span></div>
-    <div class="ag-pill" data-hash="bfcab23ecafe581cde15836fbbeafade6346e7bcb8130f735ebff700d9179182" title="Roll #102" aria-label="Roll #102"><span class="ag-pill-num">38</span></div>
-    <div class="ag-pill" data-hash="cb7f5001976614b065cbbd335bc34d698e3b5e6901592077484cd49b400b6120" title="Roll #103" aria-label="Roll #103"><span class="ag-pill-num">39</span></div>
-    <div class="ag-pill" data-hash="564c6ad5b47dbffc52f69d23fa9b8d7c5e5d7abd4f3d58ef017cf314e5e0ed1a" title="Roll #104" aria-label="Roll #104"><span class="ag-pill-num">40</span></div>
-    <div class="ag-pill" data-hash="176ff1f955395cf879909383d99749604aaa3b28301a06a442817e0673858c55" title="Roll #105" aria-label="Roll #105"><span class="ag-pill-num">41</span></div>
-    <div class="ag-pill" data-hash="192a3e00903c132911924a72037403ada88239e641fec2e44e4f294c99a355b7" title="Roll #106" aria-label="Roll #106"><span class="ag-pill-num">42</span></div>
-    <div class="ag-pill" data-hash="8c68fb79adcc490971fc284ad020541cec973c89911e58b5b542b02de7ee8224" title="Roll #107" aria-label="Roll #107"><span class="ag-pill-num">43</span></div>
-    <div class="ag-pill" data-hash="43398a9269b08cdd26c5267878a3fec3770ceb745f2feffb55edf9189a7a249d" title="Roll #108" aria-label="Roll #108"><span class="ag-pill-num">44</span></div>
-    <div class="ag-pill" data-hash="e789ac5b139f9e22004314db9c2c5a21f992fe1dcce37413a81ea1222a4a66ae" title="Roll #109" aria-label="Roll #109"><span class="ag-pill-num">45</span></div>
-    <div class="ag-pill" data-hash="04170998949964f6f7d40f2e6953a659c7d217ee72069d7b2bc645dde6356fd3" title="Roll #110" aria-label="Roll #110"><span class="ag-pill-num">46</span></div>
-    <div class="ag-pill" data-hash="a5988210ffe8a349761e98ae8e595d93a5e4e0d15dd1991ef2012e5c9e96aba2" title="Roll #111" aria-label="Roll #111"><span class="ag-pill-num">47</span></div>
-    <div class="ag-pill" data-hash="5bd8519a1b875b66ddfc660c483a6434c7f7bedaaaaf3094b8498bead7e04262" title="Roll #112" aria-label="Roll #112"><span class="ag-pill-num">48</span></div>
-    <div class="ag-pill" data-hash="faee17878a80ee9ad457a4a5afbf39bc89f475e893751207a03c5a2ce9b00bac" title="Roll #113" aria-label="Roll #113"><span class="ag-pill-num">49</span></div>
-    <div class="ag-pill" data-hash="a57809891727dbc21bd9bcb17060daf1f53010626e5b18d3548374a363faa564" title="Roll #114" aria-label="Roll #114"><span class="ag-pill-num">50</span></div>
+        <div class="ag-roster-hdr">
+          <span class="ag-roster-title">// Authorised Members</span>
+          <span class="ag-roster-count">52 accounts</span>
+        </div>
+        <div class="ag-roster-grid" id="ag-roster-grid" role="list">
+          <div
+            class="ag-pill"
+            data-hash="b5316e7ad50ca93233b2ee372aebb639a48f6f63954bfd2b55c45ef027e896ba"
+            title="Roll #63">
+            <span class="ag-pill-num">01</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="63eb428c98cdd0d17c4f0c0df24dd4057af57227def76d1a0b60596ba1d9355c"
+            title="Roll #64">
+            <span class="ag-pill-num">02</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="bc17edc1aa2cafb931043018c7acb611c8db77d208ae80f096427faafecf55cb"
+            title="Roll #65">
+            <span class="ag-pill-num">03</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="dd8565bfdebe4ba0a3e6f369ed654cd5a9649e4b1e90034e7d294ea4e190700a"
+            title="Roll #66">
+            <span class="ag-pill-num">04</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="e8d9938af8488f2fd1bfc640e7dc99b99c351b2dde450218ce25f63729d370ac"
+            title="Roll #67">
+            <span class="ag-pill-num">05</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="5c0ad97c9375a5d46a99a486db2c78106be872f4b1aef9473b635050fd41b057"
+            title="Roll #68">
+            <span class="ag-pill-num">06</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="5162535570fce8e40f88baa1dd0f17a275f02a58fb13c590e47e8a94ad514d25"
+            title="Roll #69">
+            <span class="ag-pill-num">07</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="de9dec27a7d9cf6d58ad4731c1b0b80573387d9425d6b07d53862e0c48baacba"
+            title="Roll #70">
+            <span class="ag-pill-num">08</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="f9114da7f83aeedc5d307bb43b2a225c65a64af71f6542a3304291624f595b71"
+            title="Roll #71">
+            <span class="ag-pill-num">09</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="182ecfcb0dba74c77efd514cc1e57d82635dbe2e76633ddfdcaa186caa01ba97"
+            title="Roll #72">
+            <span class="ag-pill-num">10</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="5dc8ff80c52cee1610193979a6979e33cb36f650e272ea4b4bfc37ec2ff185cf"
+            title="Roll #73">
+            <span class="ag-pill-num">11</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="ceb9d6027ff62d0326831d57af73620d6b490cf019506b407d2aba4d5b5bf989"
+            title="Roll #74">
+            <span class="ag-pill-num">12</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="c1239b69484820efa1caa54751162d228c4664bf2147f587dd665397fb00405d"
+            title="Roll #75">
+            <span class="ag-pill-num">13</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="3ff07472dedf85892c2931c98d6db1acbd2dac7beed9cd7962e61859e27052cd"
+            title="Roll #76">
+            <span class="ag-pill-num">14</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="12e3a5334454d1b453e5dd0d2e9936421ec50f76dba6e8919bd95b103707ff42"
+            title="Roll #77">
+            <span class="ag-pill-num">15</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="ad1af8d5fef8d622b5401b846e75ad1786f0d2adb244b912f7a96ecb1a235c37"
+            title="Roll #78">
+            <span class="ag-pill-num">16</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="53f7293a3751ad0bdc865d6efd113a1b976fa34a1a15e7c708961b67409e787e"
+            title="Roll #79">
+            <span class="ag-pill-num">17</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="9ff9563c2ea6f34631321ffbebd59e70828f982052e3d52ea8f787b1c10ee0ca"
+            title="Roll #80">
+            <span class="ag-pill-num">18</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="2893dcb31427b56829ae4744b2fcd2594a54dcb3e8d5447b312110c17955fd4d"
+            title="Roll #81">
+            <span class="ag-pill-num">19</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="d401c3389afcf90f503535194e6fb900b49b096f7af7084b120a94674b36a11f"
+            title="Roll #83">
+            <span class="ag-pill-num">20</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="218adca9116b1c4221f4e81cf9a138946a85a2ffd205b44da7e8343bbf0e32e1"
+            title="Roll #84">
+            <span class="ag-pill-num">21</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="753fb1f44c01fbbc9fcca8d30f4619b9eb63b06823a17477b5cca753e1008fd0"
+            title="Roll #85">
+            <span class="ag-pill-num">22</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="9f0d0f2c48663e49e857533788417a0a44ead7f8f2cfd54f1a74c87d4abafe9e"
+            title="Roll #86">
+            <span class="ag-pill-num">23</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="a920749b1631848fdbbf54496b0818b465c18b4cff5c0b93a3e480b548e90a1a"
+            title="Roll #87">
+            <span class="ag-pill-num">24</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="0bbf321a61426b2039451868c382403eec7351aa54fd57864ea5790619b4a13e"
+            title="Roll #88">
+            <span class="ag-pill-num">25</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="038bf5935bf0c9a813d38c4aeddaa9347d2547f82debc51508e7d79281ae973c"
+            title="Roll #89">
+            <span class="ag-pill-num">26</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="316e764c0a580f4e3025b2bc5cc7e6ffb2b0473f2dfde4a84e3461889d25522e"
+            title="Roll #90">
+            <span class="ag-pill-num">27</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="31db86fd7b7266300b913ba2e14d48a7cc9911245659681ce27d3bf3ec98a7d8"
+            title="Roll #91">
+            <span class="ag-pill-num">28</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="200f26564f994594e02a58ef52d84ee3063f8d7148a1e2fccbead00dd3185721"
+            title="Roll #92">
+            <span class="ag-pill-num">29</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="9b4ce00b2e03930ce72a5b1ae46c1582f888cd30ad722a8ca7771aecc4cbc7c9"
+            title="Roll #93">
+            <span class="ag-pill-num">30</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="209fc20ff31a8ca53300f103fa52c614db913af9712abb1e8c584b188325fe95"
+            title="Roll #94">
+            <span class="ag-pill-num">31</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="a2d6ed5159be330e9cf76c26288e743b778b359c8b33fc591a33d7d32fec6cd3"
+            title="Roll #96">
+            <span class="ag-pill-num">32</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="399f0aeb09f01ffda87bd2a0d9071b5e4febc30626f338355e5b2733a2215a38"
+            title="Roll #97">
+            <span class="ag-pill-num">33</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="2259d46817890b8fad2888b960e40a35d048325e6f7cf331ef5b22e05fac06a0"
+            title="Roll #98">
+            <span class="ag-pill-num">34</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="75cc68f42a0ab7abebdfa424181008ee87a42f6ceb4f86755f9d884cee61a0ff"
+            title="Roll #99">
+            <span class="ag-pill-num">35</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="f8c275c2adf6b37e88a9b1685f13ece4842ae981315248a10b73b73bc4d401c9"
+            title="Roll #100">
+            <span class="ag-pill-num">36</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="662b6c5bfb9f8bd55f240dce6c89a47c781cabf1d594e347056835bc4f094bca"
+            title="Roll #101">
+            <span class="ag-pill-num">37</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="bfcab23ecafe581cde15836fbbeafade6346e7bcb8130f735ebff700d9179182"
+            title="Roll #102">
+            <span class="ag-pill-num">38</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="cb7f5001976614b065cbbd335bc34d698e3b5e6901592077484cd49b400b6120"
+            title="Roll #103">
+            <span class="ag-pill-num">39</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="564c6ad5b47dbffc52f69d23fa9b8d7c5e5d7abd4f3d58ef017cf314e5e0ed1a"
+            title="Roll #104">
+            <span class="ag-pill-num">40</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="176ff1f955395cf879909383d99749604aaa3b28301a06a442817e0673858c55"
+            title="Roll #105">
+            <span class="ag-pill-num">41</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="192a3e00903c132911924a72037403ada88239e641fec2e44e4f294c99a355b7"
+            title="Roll #106">
+            <span class="ag-pill-num">42</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="8c68fb79adcc490971fc284ad020541cec973c89911e58b5b542b02de7ee8224"
+            title="Roll #107">
+            <span class="ag-pill-num">43</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="43398a9269b08cdd26c5267878a3fec3770ceb745f2feffb55edf9189a7a249d"
+            title="Roll #108">
+            <span class="ag-pill-num">44</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="e789ac5b139f9e22004314db9c2c5a21f992fe1dcce37413a81ea1222a4a66ae"
+            title="Roll #109">
+            <span class="ag-pill-num">45</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="04170998949964f6f7d40f2e6953a659c7d217ee72069d7b2bc645dde6356fd3"
+            title="Roll #110">
+            <span class="ag-pill-num">46</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="a5988210ffe8a349761e98ae8e595d93a5e4e0d15dd1991ef2012e5c9e96aba2"
+            title="Roll #111">
+            <span class="ag-pill-num">47</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="5bd8519a1b875b66ddfc660c483a6434c7f7bedaaaaf3094b8498bead7e04262"
+            title="Roll #112">
+            <span class="ag-pill-num">48</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="faee17878a80ee9ad457a4a5afbf39bc89f475e893751207a03c5a2ce9b00bac"
+            title="Roll #113">
+            <span class="ag-pill-num">49</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="a57809891727dbc21bd9bcb17060daf1f53010626e5b18d3548374a363faa564"
+            title="Roll #114">
+            <span class="ag-pill-num">50</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="fd28e4ed8393928258ba6b4df4683d9043cb8914e964c521f5a79579bce4ef4f"
+            title="Repeater">
+            <span class="ag-pill-num">51</span>
+          </div>
+          <div
+            class="ag-pill"
+            data-hash="11bea3f03462bd068b2388d46b3ab07cc10671ec61ecb3e02143f4da6f7aa693"
+            title="Repeater">
+            <span class="ag-pill-num">52</span>
+          </div>
+        </div>
+        <p class="ag-roster-note">
+          Pill highlights once you sign in. IDs are redacted for privacy.
+        </p>
+      </div>
+    </div>
+    <!-- /#auth-gate -->
 
-    <div class="ag-pill" data-hash="fd28e4ed8393928258ba6b4df4683d9043cb8914e964c521f5a79579bce4ef4f" title="Repeater" aria-label="Repeater"><span class="ag-pill-num">51</span></div>
-    <div class="ag-pill" data-hash="11bea3f03462bd068b2388d46b3ab07cc10671ec61ecb3e02143f4da6f7aa693" title="Repeater" aria-label="Repeater"><span class="ag-pill-num">52</span></div>
-    
-  </div>
-  <p class="ag-roster-note">
-    Pill highlights once you sign in. IDs are redacted for privacy.
-  </p>
-</div>
+    <!-- ══════════════════════════════════════
+         RESOURCE PORTAL — shown after sign in
+    ══════════════════════════════════════ -->
+    <div id="resource-portal">
+      <!-- Banner with user info -->
+      <div class="rp-banner">
+        <div class="rp-in">
+          <div class="rp-left">
+            <div class="rp-eye">
+              CSE 52nd Batch · Aterrador ·
+              <span data-semester> th Semester</span>
+            </div>
+            <h1 class="rp-h">Batch <em>Resources</em></h1>
+            <p class="rp-sub">
+              Authenticated access · Course materials &amp; senior resources
+            </p>
+          </div>
+          <div class="rp-user">
+            <div class="rp-avatar" id="user-avatar"></div>
+            <div class="rp-user-info">
+              <div class="rp-user-name" id="user-name"></div>
+              <div class="rp-user-email" id="user-email"></div>
+            </div>
+            <button class="rp-signout" onclick="signOut()">Sign Out</button>
+          </div>
+        </div>
+      </div>
 
-      <!-- Filter bar -->
+      <!-- Filter bar (sticky) -->
       <div class="rp-filterbar" role="search">
         <div class="rfb-in">
           <div class="rsrch-wrap">
@@ -202,12 +493,50 @@
               autocomplete="off"
               spellcheck="false" />
           </div>
-          
+          <button class="rtag on" data-f="all" onclick="setFilter('all', this)">
+            All
+          </button>
+          <button
+            class="rtag"
+            data-f="slides"
+            onclick="setFilter('slides', this)">
+            Slides
+          </button>
+          <button
+            class="rtag"
+            data-f="notes"
+            onclick="setFilter('notes', this)">
+            Notes
+          </button>
+          <button
+            class="rtag"
+            data-f="quest"
+            onclick="setFilter('quest', this)">
+            Questions
+          </button>
+          <button class="rtag" data-f="lab" onclick="setFilter('lab', this)">
+            Lab
+          </button>
+          <button
+            class="rtag"
+            data-f="books"
+            onclick="setFilter('books', this)">
+            Books
+          </button>
+          <button
+            class="rtag"
+            data-f="senior"
+            onclick="setFilter('senior', this)">
+            Senior
+          </button>
+          <span class="rcount" id="rcount">0 files</span>
+        </div>
       </div>
 
-      <!-- Resources -->
-      <div class="rp-main" id="main">
+      <!-- Main content -->
+      <main class="rp-main" id="main">
         <div class="rp-wrap">
+          <!-- Course materials -->
           <div class="rsh">
             <span class="rsh-tag"
               >// <span data-semester> th Semester</span> · Course
@@ -218,10 +547,19 @@
           <div class="course-list" id="course-list">
             <!-- Rendered by JS -->
           </div>
-          
+
+          <!-- Senior resources -->
+          <div class="rsh" style="margin-top: 48px">
+            <span class="rsh-tag">// Senior Resources</span>
+            <div class="rsh-ln" aria-hidden="true"></div>
+          </div>
+          <div class="senior-grid" id="senior-grid">
+            <!-- Rendered by JS -->
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
+    <!-- /#resource-portal -->
 
     <!-- ══════ FOOTER ══════ -->
     <footer role="contentinfo">
@@ -308,9 +646,7 @@
         </div>
       </div>
     </footer>
-    <script
-      data-cfasync="false"
-      src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+
     <script src="js/resources.js"></script>
   </body>
 </html>

@@ -1,14 +1,19 @@
 "use strict";
 document.getElementById("yr").textContent = new Date().getFullYear();
 
+/* ══════════════════════════════════════════════════════════
+   CONFIG
+════════════════════════════════════════════════════════════ */
 const GOOGLE_CLIENT_ID =
   "820667040088-fme7kg1mg93jg33u777idd7jl20927am.apps.googleusercontent.com";
 
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbxocBxiKrYnxL_Z7DmlDZID-3BE1jpOBZ8pBhhtLDIF7toILjyFEPFRWYcxK5ZxN9tsfw/exec";
+
 /* ══════════════════════════════════════════════════════════
-   DEV PREVIEW MODE — skip login for local testing
-   Set DEV_PREVIEW_MODE = true  → bypass auth, see portal
-   Set DEV_PREVIEW_MODE = false → normal login required
-   !! Set to false before deploying to production !!
+   DEV PREVIEW MODE
+   Set true to bypass login for local testing.
+   Set false before deploying to production!
 ════════════════════════════════════════════════════════════ */
 const DEV_PREVIEW_MODE = false;
 const DEV_USER = {
@@ -17,6 +22,9 @@ const DEV_USER = {
   picture: null,
 };
 
+/* ══════════════════════════════════════════════════════════
+   ALLOWED EMAIL HASHES (SHA-256 of lowercase email)
+════════════════════════════════════════════════════════════ */
 const ALLOWED_HASHES = new Set([
   "b5316e7ad50ca93233b2ee372aebb639a48f6f63954bfd2b55c45ef027e896ba",
   "63eb428c98cdd0d17c4f0c0df24dd4057af57227def76d1a0b60596ba1d9355c",
@@ -71,35 +79,16 @@ const ALLOWED_HASHES = new Set([
   "fd28e4ed8393928258ba6b4df4683d9043cb8914e964c521f5a79579bce4ef4f",
   "11bea3f03462bd068b2388d46b3ab07cc10671ec61ecb3e02143f4da6f7aa693",
 ]);
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbxocBxiKrYnxL_Z7DmlDZID-3BE1jpOBZ8pBhhtLDIF7toILjyFEPFRWYcxK5ZxN9tsfw/exec";
 
 /* ══════════════════════════════════════════════════════════
-   FALLBACK RESOURCE DATA
-   Used when API_URL not yet set, or fetch fails.
-   Keep these in sync with your sheet as a safety net.
+   DATA
+════════════════════════════════════════════════════════════ */
+let COURSES = [];
+let SENIOR_RESOURCES = [];
 
-   Sheet tabs needed:
-     "Resources" — one row per file, columns:
-       courseCode | courseName | courseColor | teacher |
-       fileName | fileType | fileIcon | fileSize | fileUrl | isNew
-
-     "SeniorResources" — one row per file, columns:
-       batch | packTitle | packDesc | fileName | fileUrl | fileIcon
-
-   fileType values: slides | notes | quest | lab | books
-   isNew: TRUE / FALSE
-══════════════════════════════════════════════════════════ */
-const FALLBACK_COURSES = [];
-
-const FALLBACK_SENIOR = [];
-
-let COURSES = []; // filled by loadResources()
-let SENIOR_RESOURCES = []; // filled by loadResources()
-
-/* ═══════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    COLOUR MAPS
-═══════════════════════════════════════════ */
+════════════════════════════════════════════════════════════ */
 const TYPE_STYLE = {
   slides: {
     label: "Slides",
@@ -129,12 +118,18 @@ const TYPE_STYLE = {
   },
 };
 
-/* ═══════════════════════════════════════════
-   RENDER COURSES
-═══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   RENDER — COURSES
+════════════════════════════════════════════════════════════ */
 function renderCourses() {
   const list = document.getElementById("course-list");
+  if (!list) return;
   list.innerHTML = "";
+
+  if (!COURSES.length) {
+    list.innerHTML = '<div class="empty-state">No course materials yet</div>';
+    return;
+  }
 
   COURSES.forEach((c) => {
     const block = document.createElement("div");
@@ -180,17 +175,22 @@ function renderCourses() {
         </div>
       </div>
     `;
-
     list.appendChild(block);
   });
 }
 
-/* ═══════════════════════════════════════════
-   RENDER SENIOR RESOURCES
-═══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   RENDER — SENIOR RESOURCES
+════════════════════════════════════════════════════════════ */
 function renderSenior() {
   const grid = document.getElementById("senior-grid");
+  if (!grid) return;
   grid.innerHTML = "";
+
+  if (!SENIOR_RESOURCES.length) {
+    grid.innerHTML = '<div class="empty-state">No senior resources yet</div>';
+    return;
+  }
 
   SENIOR_RESOURCES.forEach((s) => {
     const card = document.createElement("div");
@@ -203,7 +203,6 @@ function renderSenior() {
       s.desc
     ).toLowerCase();
     card.dataset.type = "senior";
-
     card.innerHTML = `
       <div class="sc-batch">🌟 ${s.batch}</div>
       <div class="sc-title">${s.title}</div>
@@ -222,47 +221,46 @@ function renderSenior() {
           .join("")}
       </div>
     `;
-
     grid.appendChild(card);
   });
 }
 
-/* ═══════════════════════════════════════════
-   COURSE ACCORDION TOGGLE
-═══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   ACCORDION TOGGLE
+════════════════════════════════════════════════════════════ */
 function toggleCourse(btn) {
   const block = btn.closest(".course-block");
   const isOpen = block.classList.toggle("open");
   btn.setAttribute("aria-expanded", String(isOpen));
 }
 
-/* ═══════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    FILTER + SEARCH
-═══════════════════════════════════════════ */
+════════════════════════════════════════════════════════════ */
 let curFilter = "all";
 let curSearch = "";
 
 function setFilter(f, btn) {
   curFilter = f;
   document.querySelectorAll(".rtag").forEach((b) => b.classList.remove("on"));
-  btn.classList.add("on");
+  if (btn) btn.classList.add("on");
   applyFilters();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const srch = document.getElementById("rsearch");
-  if (srch)
+  if (srch) {
     srch.addEventListener("input", function () {
       curSearch = this.value.toLowerCase().trim();
       applyFilters();
     });
+  }
 });
 
 function applyFilters() {
   let visFiles = 0;
   let visSenior = 0;
 
-  // For courses: show/hide individual rcard items, hide course block if all cards hidden
   document.querySelectorAll(".course-block").forEach((block) => {
     const cards = block.querySelectorAll(".rcard");
     let blockVis = 0;
@@ -280,11 +278,9 @@ function applyFilters() {
       "hidden",
       blockVis === 0 && (curFilter !== "all" || curSearch),
     );
-    // Auto-open if search active and matches
     if (curSearch && blockVis > 0) block.classList.add("open");
   });
 
-  // Senior section
   document.querySelectorAll(".scard").forEach((card) => {
     const mType = curFilter === "all" || curFilter === "senior";
     const mSearch = !curSearch || card.dataset.search.includes(curSearch);
@@ -296,42 +292,27 @@ function applyFilters() {
   const total =
     COURSES.reduce((a, c) => a + c.resources.length, 0) +
     SENIOR_RESOURCES.reduce((a, s) => a + s.files.length, 0);
-  document.getElementById("rcount").textContent =
-    `${visFiles + visSenior} of ${total} files`;
+  const rc = document.getElementById("rcount");
+  if (rc) rc.textContent = `${visFiles + visSenior} of ${total} files`;
 }
 
 function updateCount() {
   const total =
     COURSES.reduce((a, c) => a + c.resources.length, 0) +
     SENIOR_RESOURCES.reduce((a, s) => a + s.files.length, 0);
-  document.getElementById("rcount").textContent = `${total} files`;
+  const rc = document.getElementById("rcount");
+  if (rc) rc.textContent = `${total} files`;
 }
 
 /* ══════════════════════════════════════════════════════════
-   RESOURCE LOADER
-   Called after auth succeeds. Fetches two sheet tabs in
-   parallel, maps rows into COURSES and SENIOR_RESOURCES,
-   then calls the existing render functions.
-
-   Falls back to FALLBACK_COURSES / FALLBACK_SENIOR if
-   API_URL is not set or fetch fails — portal still works.
-══════════════════════════════════════════════════════════ */
+   RESOURCE LOADER — fetches from Google Sheets
+════════════════════════════════════════════════════════════ */
 async function loadResources() {
-  // Show a subtle loading indicator inside the portal
   const courseList = document.getElementById("course-list");
-  if (courseList)
+  if (courseList) {
     courseList.innerHTML =
       '<div style="padding:40px;text-align:center;font-family:var(--m2);font-size:10px;' +
       'letter-spacing:3px;text-transform:uppercase;color:var(--txd)">Loading resources…</div>';
-
-  if (API_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
-    console.info("[Resources] API_URL not set — using fallback data.");
-    COURSES = FALLBACK_COURSES;
-    SENIOR_RESOURCES = FALLBACK_SENIOR;
-    renderCourses();
-    renderSenior();
-    updateCount();
-    return;
   }
 
   try {
@@ -345,13 +326,7 @@ async function loadResources() {
     const resRows = await resRes.json();
     const senRows = await senRes.json();
 
-    /*
-      Resources sheet columns:
-        courseCode | courseName | courseColor | teacher |
-        fileName | fileType | fileIcon | fileSize | fileUrl | isNew
-
-      Build the nested COURSES structure the render functions expect.
-    */
+    // Build COURSES
     const courseMap = new Map();
     resRows
       .filter((r) => r.courseCode && r.fileName)
@@ -359,7 +334,7 @@ async function loadResources() {
         const code = String(r.courseCode).trim();
         if (!courseMap.has(code)) {
           courseMap.set(code, {
-            code: code,
+            code,
             name: String(r.courseName || "").trim(),
             color: String(r.courseColor || "#FF6B00").trim(),
             teacher: String(r.teacher || "").trim(),
@@ -377,12 +352,7 @@ async function loadResources() {
       });
     COURSES = [...courseMap.values()];
 
-    /*
-      SeniorResources sheet columns:
-        batch | packTitle | packDesc | fileName | fileUrl | fileIcon
-
-      Build the nested SENIOR_RESOURCES structure.
-    */
+    // Build SENIOR_RESOURCES
     const senMap = new Map();
     senRows
       .filter((r) => r.batch && r.fileName)
@@ -403,69 +373,47 @@ async function loadResources() {
         });
       });
     SENIOR_RESOURCES = [...senMap.values()];
-
-    renderCourses();
-    renderSenior();
-    updateCount();
   } catch (err) {
     console.error("[Resources] Fetch failed:", err);
     COURSES = [];
     SENIOR_RESOURCES = [];
-    renderCourses();
-    renderSenior();
-    updateCount();
   }
+
+  renderCourses();
+  renderSenior();
+  updateCount();
 }
 
-/* ═══════════════════════════════════════════
-   GOOGLE OAUTH — SIGN IN / SIGN OUT
-═══════════════════════════════════════════ */
-let googleClient = null;
+/* ══════════════════════════════════════════════════════════
+   GOOGLE OAUTH
+════════════════════════════════════════════════════════════ */
 let currentUser = null;
 
-/* Called when Google script loads */
 window.onload = function () {
   if (DEV_PREVIEW_MODE) {
     grantAccess(DEV_USER);
     return;
   }
 
+  // Restore saved session
   const saved = sessionStorage.getItem("aterrador_user");
   if (saved) {
     try {
-      const user = JSON.parse(saved);
-      grantAccess(user);
+      grantAccess(JSON.parse(saved));
       return;
     } catch (e) {
       sessionStorage.removeItem("aterrador_user");
     }
   }
 };
-function initGoogleClient() {
-  google.accounts.oauth2.initTokenClient({
-    client_id: GOOGLE_CLIENT_ID,
-    scope:
-      "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
-    callback: handleTokenResponse,
-  });
-}
 
 function startSignIn() {
   const errBox = document.getElementById("ag-error");
-  errBox.classList.remove("show");
-
-  if (
-    GOOGLE_CLIENT_ID === "YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
-  ) {
-    showError(
-      "<strong>Dev Mode:</strong> Configure GOOGLE_CLIENT_ID to enable OAuth.",
-    );
-    return;
-  }
+  if (errBox) errBox.classList.remove("show");
 
   if (!window.google) {
     showError(
-      "Google Sign-In could not load. Please check your connection and try again.",
+      "Google Sign-In could not load. Please check your internet connection.",
     );
     return;
   }
@@ -477,34 +425,52 @@ function startSignIn() {
     cancel_on_tap_outside: false,
   });
 
-  google.accounts.id.prompt((notification) => {
-    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-      // One Tap was blocked — fall back to the select_account popup
-      const win = window.open(
-        `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(location.origin + location.pathname)}&response_type=token&scope=email%20profile&prompt=select_account`,
-        "googleSignIn",
-        "width=500,height=600,left=200,top=100",
+  // Use renderButton on a hidden helper div — most reliable cross-browser approach
+  let helper = document.getElementById("_g_helper");
+  if (!helper) {
+    helper = document.createElement("div");
+    helper.id = "_g_helper";
+    helper.style.cssText =
+      "position:absolute;visibility:hidden;pointer-events:none;width:1px;height:1px;overflow:hidden;top:-9999px";
+    document.body.appendChild(helper);
+  }
+  helper.innerHTML = "";
+
+  google.accounts.id.renderButton(helper, {
+    type: "standard",
+    theme: "filled_black",
+    size: "large",
+  });
+
+  // Click the rendered button after it's injected
+  setTimeout(() => {
+    const rendered =
+      helper.querySelector('[role="button"]') ||
+      helper.querySelector("div[tabindex]") ||
+      helper.querySelector("div");
+    if (rendered) {
+      rendered.click();
+    } else {
+      showError(
+        "Could not launch Google Sign-In. Please try a different browser.",
       );
     }
-  });
+  }, 400);
 }
 
-/* Handle ID token from google.accounts.id (One Tap) */
 function handleIdToken(response) {
   try {
     const payload = parseJwt(response.credential);
-    const user = {
+    checkAccess({
       email: payload.email,
       name: payload.name,
       picture: payload.picture,
-    };
-    checkAccess(user);
+    });
   } catch (e) {
     showError("Failed to read sign-in response. Please try again.");
   }
 }
 
-/* JWT parser (no library needed) */
 function parseJwt(token) {
   const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
   return JSON.parse(
@@ -517,12 +483,8 @@ function parseJwt(token) {
   );
 }
 
-/* ── Access control ── */
 async function checkAccess(user) {
   const email = (user.email || "").toLowerCase().trim();
-
-  // Hash the email with SHA-256 then compare against stored hashes
-  // This means the plaintext email list is never in the page source
   try {
     const msgBuf = new TextEncoder().encode(email);
     const hashBuf = await crypto.subtle.digest("SHA-256", msgBuf);
@@ -536,31 +498,27 @@ async function checkAccess(user) {
       showError(
         `The account <strong>${email.split("@")[0].slice(0, 4)}·····@${email.split("@")[1]}</strong> ` +
           `is not on the authorised batch list. ` +
-          `This portal is for <strong>ATERRADOR CSE 52nd Batch</strong> members only. ` +
-          `Contact your batch representative if you believe this is an error.`,
+          `This portal is for <strong>ATERRADOR CSE 52nd Batch</strong> members only.`,
       );
     }
   } catch (e) {
     console.error("[Auth] checkAccess error:", e);
     showError(
-      "Sign-in failed. Please try again or use a different browser. Error: " +
-        e.message,
+      "Sign-in failed. Please try a different browser. Error: " + e.message,
     );
   }
 }
 
 function grantAccess(user) {
   currentUser = user;
-  // Persist session
   sessionStorage.setItem("aterrador_user", JSON.stringify(user));
 
-  // Highlight this user's pill in the access grid
+  // Highlight pill
   (async () => {
     try {
-      const e2 = (user.email || "").toLowerCase().trim();
       const buf = await crypto.subtle.digest(
         "SHA-256",
-        new TextEncoder().encode(e2),
+        new TextEncoder().encode((user.email || "").toLowerCase().trim()),
       );
       const hex = Array.from(new Uint8Array(buf))
         .map((b) => b.toString(16).padStart(2, "0"))
@@ -570,51 +528,63 @@ function grantAccess(user) {
         pill.classList.add("ag-pill--me");
         pill.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
-    } catch (e) {}
+    } catch (e) {
+      /* silent */
+    }
   })();
 
-  // Populate user pill
+  // Populate user pill — safe null checks
   const avatarEl = document.getElementById("user-avatar");
-  if (user.picture) {
-    avatarEl.innerHTML = `<img src="${user.picture}" alt="${user.name}">`;
-  } else {
-    avatarEl.textContent = (user.name || user.email)[0].toUpperCase();
+  const nameEl = document.getElementById("user-name");
+  const emailEl = document.getElementById("user-email");
+
+  if (avatarEl) {
+    if (user.picture) {
+      avatarEl.innerHTML = `<img src="${user.picture}" alt="${user.name || "User"}">`;
+    } else {
+      avatarEl.textContent = (user.name || user.email || "?")[0].toUpperCase();
+    }
   }
-  document.getElementById("user-name").textContent = user.name || "—";
-  document.getElementById("user-email").textContent = user.email || "—";
+  if (nameEl) nameEl.textContent = user.name || "—";
+  if (emailEl) emailEl.textContent = user.email || "—";
 
   // Switch views
-  document.getElementById("auth-gate").style.display = "none";
-  document.getElementById("resource-portal").classList.add("show");
+  const gate = document.getElementById("auth-gate");
+  const portal = document.getElementById("resource-portal");
+  if (gate) gate.style.display = "none";
+  if (portal) portal.classList.add("show");
 
-  // Load resources from sheet (or fallback)
   loadResources();
 }
 
 function signOut() {
   currentUser = null;
   sessionStorage.removeItem("aterrador_user");
-  if (window.google) {
-    google.accounts.id.disableAutoSelect();
-  }
-  document.getElementById("resource-portal").classList.remove("show");
-  document.getElementById("auth-gate").style.display = "";
-  document.getElementById("ag-error").classList.remove("show");
+  if (window.google) google.accounts.id.disableAutoSelect();
+  const gate = document.getElementById("auth-gate");
+  const portal = document.getElementById("resource-portal");
+  const errBox = document.getElementById("ag-error");
+  if (portal) portal.classList.remove("show");
+  if (gate) gate.style.display = "";
+  if (errBox) errBox.classList.remove("show");
 }
 
 function showError(msg) {
   const box = document.getElementById("ag-error");
   const body = document.getElementById("ae-body");
-  body.innerHTML = msg;
-  box.classList.add("show");
-  box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  if (body) body.innerHTML = msg;
+  if (box) {
+    box.classList.add("show");
+    box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
 }
 
-/* ═══════════════════════════════════════════
-   HAMBURGER
-═══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   HAMBURGER MENU
+════════════════════════════════════════════════════════════ */
 const burger = document.getElementById("burger");
 const mob = document.getElementById("mob-nav");
+
 function tog(f) {
   const o = f !== undefined ? f : !mob.classList.contains("open");
   mob.classList.toggle("open", o);
@@ -623,6 +593,7 @@ function tog(f) {
   burger.setAttribute("aria-label", o ? "Close menu" : "Open menu");
   document.body.style.overflow = o ? "hidden" : "";
 }
+
 burger.addEventListener("click", () => tog());
 document.addEventListener("click", (e) => {
   if (
@@ -638,22 +609,27 @@ document.addEventListener("keydown", (e) => {
 mob
   .querySelectorAll("a")
   .forEach((a) => a.addEventListener("click", () => tog(false)));
+
 const hdr = document.querySelector("header");
 window.addEventListener(
   "scroll",
   () => {
-    hdr.style.boxShadow =
-      window.scrollY > 10 ? "0 4px 32px rgba(0,0,0,.6)" : "none";
+    if (hdr)
+      hdr.style.boxShadow =
+        window.scrollY > 10 ? "0 4px 32px rgba(0,0,0,.6)" : "none";
   },
   { passive: true },
 );
 
+/* ══════════════════════════════════════════════════════════
+   SEMESTER — fetch from Settings sheet
+════════════════════════════════════════════════════════════ */
 (async function loadSemester() {
   if (window.location.protocol === "file:") return;
   try {
     const ctrl = new AbortController();
     setTimeout(() => ctrl.abort(), 10000);
-    const res = await fetch(API_URL + "?sheet=Settings", {
+    const res = await fetch(`${API_URL}?sheet=Settings`, {
       cache: "no-cache",
       signal: ctrl.signal,
     });
