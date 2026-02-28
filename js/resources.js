@@ -1,19 +1,6 @@
 "use strict";
 document.getElementById("yr").textContent = new Date().getFullYear();
 
-/* ════════════════════════════════════════════════════════════
-   ████  CONFIGURATION — EDIT THESE  ████
-
-   GOOGLE_CLIENT_ID:
-     Get from https://console.cloud.google.com/
-     APIs & Services → Credentials → OAuth 2.0 Client IDs
-
-   ALLOWED_EMAILS: 
-     Explicit list of authorised batch member emails.
-     Add every ATERRADOR batch member's email here.
-     Both @juniv.edu and personal Gmail addresses can be added.
-     Case-insensitive matching is applied automatically.
-════════════════════════════════════════════════════════════ */
 const GOOGLE_CLIENT_ID =
   "820667040088-fme7kg1mg93jg33u777idd7jl20927am.apps.googleusercontent.com";
 
@@ -23,20 +10,13 @@ const GOOGLE_CLIENT_ID =
    Set DEV_PREVIEW_MODE = false → normal login required
    !! Set to false before deploying to production !!
 ════════════════════════════════════════════════════════════ */
-const DEV_PREVIEW_MODE = true;
+const DEV_PREVIEW_MODE = false;
 const DEV_USER = {
   name: "Preview User",
   email: "dev@aterrador.local",
   picture: null,
 };
 
-/* ══════════════════════════════════════════════════════════
-   SECURITY: email addresses are stored as SHA-256 hashes
-   only. The actual emails never appear in page source.
-   Auth: we hash the signed-in email and check it against
-   this set — so no one can read the list from source view.
-   52 authorised members — ATERRADOR CSE 52nd Batch.
-════════════════════════════════════════════════════════════ */
 const ALLOWED_HASHES = new Set([
   "b5316e7ad50ca93233b2ee372aebb639a48f6f63954bfd2b55c45ef027e896ba",
   "63eb428c98cdd0d17c4f0c0df24dd4057af57227def76d1a0b60596ba1d9355c",
