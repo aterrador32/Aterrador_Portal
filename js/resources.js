@@ -425,40 +425,22 @@ let currentUser = null;
 
 /* Called when Google script loads */
 window.onload = function () {
-  // DEV PREVIEW — bypass auth entirely
   if (DEV_PREVIEW_MODE) {
     grantAccess(DEV_USER);
     return;
   }
 
-  // Check for saved session
   const saved = sessionStorage.getItem("aterrador_user");
   if (saved) {
     try {
       const user = JSON.parse(saved);
       grantAccess(user);
+      return;
     } catch (e) {
       sessionStorage.removeItem("aterrador_user");
     }
   }
-
-  // Init Google client if CLIENT_ID is configured
-  if (
-    GOOGLE_CLIENT_ID !== "YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
-  ) {
-    if (window.google) {
-      initGoogleClient();
-    }
-  } else {
-    // Demo mode — show a dev notice on the sign-in button
-    const btn = document.getElementById("signin-btn");
-    if (btn) {
-      btn.title =
-        "Configure GOOGLE_CLIENT_ID in the script to enable real OAuth";
-    }
-  }
 };
-
 function initGoogleClient() {
   google.accounts.oauth2.initTokenClient({
     client_id: GOOGLE_CLIENT_ID,
@@ -475,16 +457,16 @@ function startSignIn() {
   if (
     GOOGLE_CLIENT_ID === "YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
   ) {
-    document.getElementById("ae-body").innerHTML =
-      "<strong>Dev Mode:</strong> Configure <code>GOOGLE_CLIENT_ID</code> in the script to enable real Google OAuth.";
-    errBox.classList.add("show");
+    showError(
+      "<strong>Dev Mode:</strong> Configure GOOGLE_CLIENT_ID to enable OAuth.",
+    );
     return;
   }
 
   if (!window.google) {
-    document.getElementById("ae-body").textContent =
-      "Google Sign-In could not load. Please check your internet connection and try again.";
-    errBox.classList.add("show");
+    showError(
+      "Google Sign-In could not load. Please check your connection and try again.",
+    );
     return;
   }
 
@@ -492,19 +474,18 @@ function startSignIn() {
     client_id: GOOGLE_CLIENT_ID,
     callback: handleIdToken,
     ux_mode: "popup",
+    cancel_on_tap_outside: false,
   });
 
-  const target = document.getElementById("signin-btn");
-  if (!target) {
-    console.error("[Auth] #signin-btn element not found in DOM");
-    return;
-  }
-
-  google.accounts.id.renderButton(target, {
-    theme: "filled_black",
-    size: "large",
-    text: "signin_with_google",
-    width: 280,
+  google.accounts.id.prompt((notification) => {
+    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+      // One Tap was blocked — fall back to the select_account popup
+      const win = window.open(
+        `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(location.origin + location.pathname)}&response_type=token&scope=email%20profile&prompt=select_account`,
+        "googleSignIn",
+        "width=500,height=600,left=200,top=100",
+      );
+    }
   });
 }
 
