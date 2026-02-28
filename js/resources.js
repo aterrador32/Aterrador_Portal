@@ -472,13 +472,11 @@ function startSignIn() {
   const errBox = document.getElementById("ag-error");
   errBox.classList.remove("show");
 
-  // If CLIENT_ID not configured, show demo/dev message
   if (
     GOOGLE_CLIENT_ID === "YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
   ) {
     document.getElementById("ae-body").innerHTML =
-      "<strong>Dev Mode:</strong> Configure <code>GOOGLE_CLIENT_ID</code> in the script to enable real Google OAuth. " +
-      "";
+      "<strong>Dev Mode:</strong> Configure <code>GOOGLE_CLIENT_ID</code> in the script to enable real Google OAuth.";
     errBox.classList.add("show");
     return;
   }
@@ -495,10 +493,18 @@ function startSignIn() {
     callback: handleIdToken,
     ux_mode: "popup",
   });
-  google.accounts.id.renderButton(document.getElementById("signin-btn"), {
+
+  const target = document.getElementById("signin-btn");
+  if (!target) {
+    console.error("[Auth] #signin-btn element not found in DOM");
+    return;
+  }
+
+  google.accounts.id.renderButton(target, {
     theme: "filled_black",
     size: "large",
     text: "signin_with_google",
+    width: 280,
   });
 }
 
