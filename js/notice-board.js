@@ -49,7 +49,7 @@ const FALLBACK_NOTICES = [
     isNew: false,
     title: "Welcome to the Notice Board",
     date: "2026-03-07",
-    author: "Portal Admin",
+    author: "T-REX",
     preview: "All batch announcements will appear here. Check back regularly!",
     body: `<p>This notice board displays updates Database. If you see this message, the live data couldn't be loaded. Please check your connection or contact the admin.</p>`,
   },
@@ -167,18 +167,21 @@ function render() {
       n.author
     ).toLowerCase();
 
-    /* action button */
-    const btnHtml = isExt
-      ? `<a class="nc-action-btn" href="${n.url}" target="_blank" rel="noopener noreferrer"
-           style="color:var(--info);border-color:rgba(100,160,255,.3)"
-           aria-label="Open on JU website">
-           <span>🔗</span> Open on JU
-         </a>`
-      : `<button class="nc-action-btn" onclick="toggleExpand('${n.id}',this)"
-           style="color:${tc.color};border-color:${tc.border}"
-           aria-expanded="false" aria-controls="expand-${n.id}">
-           <span id="arr-${n.id}">▸</span> Read More
-         </button>`;
+    /* action button - dynamic based on hasLink */
+    const btnHtml =
+      n.hasLink && n.url
+        ? `<a class="nc-action-btn" href="${n.url}" target="_blank" rel="noopener noreferrer"
+       style="color:var(--info);border-color:rgba(100,160,255,.3)"
+       aria-label="${n.linkText || "Open link"}">
+        <span>🔗</span> ${n.linkText || "Open Link"}
+      </a>`
+        : !isExt && n.body
+          ? `<button class="nc-action-btn" onclick="toggleExpand('${n.id}',this)"
+         style="color:${tc.color};border-color:${tc.border}"
+         aria-expanded="false" aria-controls="expand-${n.id}">
+          <span id="arr-${n.id}">▸</span> Read More
+        </button>`
+          : "";
 
     card.innerHTML = `
       <div class="nc-inner" onclick="cardClick('${n.id}','${isExt ? n.url : ""}')">
@@ -187,14 +190,14 @@ function render() {
           <div class="nc-type-ico" style="border-color:${tc.border};background:${tc.color}18">
             ${tc.icon}
           </div>
-          <span class="nc-source-tag"
-            style="${
-              isExt
-                ? "background:rgba(100,160,255,.1);border:1px solid rgba(100,160,255,.25);color:#64A0FF"
-                : `background:${tc.color}15;border:1px solid ${tc.border};color:${tc.color}`
-            }">
-            ${isExt ? "JU" : "Internal"}
-          </span>
+        <span class="nc-source-tag"
+  style="${
+    isExt
+      ? "background:rgba(100,160,255,.1);border:1px solid rgba(100,160,255,.25);color:#64A0FF"
+      : `background:${tc.color}15;border:1px solid ${tc.border};color:${tc.color}`
+  }">
+  ${isExt ? "External" : "Internal"}
+</span>
         </div>
 
         <!-- body -->
@@ -205,7 +208,7 @@ function render() {
             </span>
             ${n.pinned ? '<span class="nc-pin">📌 Pinned</span>' : ""}
             ${n.isNew ? '<span class="nc-new">● New</span>' : ""}
-            ${isExt ? '<span class="nc-ext">🔗 JU Website</span>' : ""}
+            ${isExt ? '<span class="nc-ext">🔗 External Link</span>' : ""}
           </div>
           <div class="nc-title">${n.title}</div>
           <p class="nc-body-text">${n.preview}</p>
@@ -462,8 +465,10 @@ async function loadNotices() {
         preview: String(r.preview || "").trim(),
         body: r.body ? String(r.body).trim() : "",
         url: r.url ? String(r.url).trim() : "",
+        hasLink: normBool(r.hasLink),
+        linkText: r.linkText ? String(r.linkText).trim() : "Open Link",
       };
-      if (!n.date) n.date = "2025-01-01";
+      if (!n.date) n.date = "2026-03-07";
       return n;
     });
 
