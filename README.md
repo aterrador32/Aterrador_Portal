@@ -367,8 +367,15 @@ T-REX — Design & Development
 
 - 🏫 University: https://www.juniv.edu
 
+<<<<<<< HEAD
 © 2025 · All rights reserved · Designed & Developed by T-REX
 
 
 ---
 
+=======
+© 2026 · All rights reserved · Designed & Developed by T-REX
+
+
+---
+>>>>>>> 1c457fc18e6f26212325d858d9ed66d0a7d327ea
