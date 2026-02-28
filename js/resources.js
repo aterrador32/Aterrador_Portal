@@ -409,19 +409,12 @@ window.onload = function () {
 
 function startSignIn() {
   const errBox = document.getElementById("ag-error");
-<<<<<<< HEAD
   if (errBox) errBox.classList.remove("show");
 
   if (!window.google) {
     showError(
       "Google Sign-In could not load. Please check your internet connection.",
     );
-=======
-  errBox.classList.remove("show");
-
-  if (!window.google) {
-    showError("Google Sign-In could not load. Please check your connection.");
->>>>>>> ee104ccf9bada090d2f6f1951c5fc8a95e64ee1e
     return;
   }
 
@@ -429,28 +422,19 @@ function startSignIn() {
     client_id: GOOGLE_CLIENT_ID,
     callback: handleIdToken,
     ux_mode: "popup",
+    cancel_on_tap_outside: false,
   });
 
-<<<<<<< HEAD
   // Use renderButton on a hidden helper div — most reliable cross-browser approach
-=======
-  // Create a hidden throwaway div for renderButton
->>>>>>> ee104ccf9bada090d2f6f1951c5fc8a95e64ee1e
   let helper = document.getElementById("_g_helper");
   if (!helper) {
     helper = document.createElement("div");
     helper.id = "_g_helper";
-<<<<<<< HEAD
     helper.style.cssText =
       "position:absolute;visibility:hidden;pointer-events:none;width:1px;height:1px;overflow:hidden;top:-9999px";
     document.body.appendChild(helper);
   }
   helper.innerHTML = "";
-=======
-    helper.style.cssText = "position:absolute;visibility:hidden;pointer-events:none;width:1px;height:1px;overflow:hidden";
-    document.body.appendChild(helper);
-  }
->>>>>>> ee104ccf9bada090d2f6f1951c5fc8a95e64ee1e
 
   google.accounts.id.renderButton(helper, {
     type: "standard",
@@ -458,7 +442,6 @@ function startSignIn() {
     size: "large",
   });
 
-<<<<<<< HEAD
   // Click the rendered button after it's injected
   setTimeout(() => {
     const rendered =
@@ -473,17 +456,6 @@ function startSignIn() {
       );
     }
   }, 400);
-=======
-  // Click the rendered button programmatically
-  setTimeout(() => {
-    const btn = helper.querySelector('[role="button"]') || helper.querySelector("div[tabindex]");
-    if (btn) {
-      btn.click();
-    } else {
-      showError("Could not launch Google Sign-In. Please try a different browser.");
-    }
-  }, 300);
->>>>>>> ee104ccf9bada090d2f6f1951c5fc8a95e64ee1e
 }
 
 function handleIdToken(response) {
