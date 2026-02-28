@@ -454,19 +454,8 @@ function startSignIn() {
   const errBox = document.getElementById("ag-error");
   errBox.classList.remove("show");
 
-  if (
-    GOOGLE_CLIENT_ID === "YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
-  ) {
-    showError(
-      "<strong>Dev Mode:</strong> Configure GOOGLE_CLIENT_ID to enable OAuth.",
-    );
-    return;
-  }
-
   if (!window.google) {
-    showError(
-      "Google Sign-In could not load. Please check your connection and try again.",
-    );
+    showError("Google Sign-In could not load. Please check your connection.");
     return;
   }
 
@@ -474,19 +463,32 @@ function startSignIn() {
     client_id: GOOGLE_CLIENT_ID,
     callback: handleIdToken,
     ux_mode: "popup",
-    cancel_on_tap_outside: false,
   });
 
-  google.accounts.id.prompt((notification) => {
-    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-      // One Tap was blocked — fall back to the select_account popup
-      const win = window.open(
-        `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(location.origin + location.pathname)}&response_type=token&scope=email%20profile&prompt=select_account`,
-        "googleSignIn",
-        "width=500,height=600,left=200,top=100",
-      );
-    }
+  // Create a hidden throwaway div for renderButton
+  let helper = document.getElementById("_g_helper");
+  if (!helper) {
+    helper = document.createElement("div");
+    helper.id = "_g_helper";
+    helper.style.cssText = "position:absolute;visibility:hidden;pointer-events:none;width:1px;height:1px;overflow:hidden";
+    document.body.appendChild(helper);
+  }
+
+  google.accounts.id.renderButton(helper, {
+    type: "standard",
+    theme: "filled_black",
+    size: "large",
   });
+
+  // Click the rendered button programmatically
+  setTimeout(() => {
+    const btn = helper.querySelector('[role="button"]') || helper.querySelector("div[tabindex]");
+    if (btn) {
+      btn.click();
+    } else {
+      showError("Could not launch Google Sign-In. Please try a different browser.");
+    }
+  }, 300);
 }
 
 /* Handle ID token from google.accounts.id (One Tap) */
