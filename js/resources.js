@@ -495,7 +495,11 @@ function startSignIn() {
     callback: handleIdToken,
     ux_mode: "popup",
   });
-  google.accounts.id.prompt();
+  google.accounts.id.renderButton(document.getElementById("signin-btn"), {
+    theme: "filled_black",
+    size: "large",
+    text: "signin_with_google",
+  });
 }
 
 /* Handle ID token from google.accounts.id (One Tap) */
@@ -550,9 +554,10 @@ async function checkAccess(user) {
       );
     }
   } catch (e) {
-    // Fallback if SubtleCrypto unavailable (non-HTTPS)
+    console.error("[Auth] checkAccess error:", e);
     showError(
-      "Sign-in requires a secure (HTTPS) connection. Please access this portal via the deployed URL, not a local file.",
+      "Sign-in failed. Please try again or use a different browser. Error: " +
+        e.message,
     );
   }
 }
