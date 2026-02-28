@@ -1,7 +1,7 @@
 "use strict";
 document.getElementById("yr").textContent = new Date().getFullYear();
 
-/* ── hamburger ── */
+/* ── hamburge ── */
 const burger = document.getElementById("burger");
 const mob = document.getElementById("mob-nav");
 function tog(f) {
