@@ -8,7 +8,7 @@ document.getElementById("yr").textContent = new Date().getFullYear();
      Get from https://console.cloud.google.com/
      APIs & Services → Credentials → OAuth 2.0 Client IDs
 
-   ALLOWED_EMAILS:
+   ALLOWED_EMAILS: 
      Explicit list of authorised batch member emails.
      Add every ATERRADOR batch member's email here.
      Both @juniv.edu and personal Gmail addresses can be added.
