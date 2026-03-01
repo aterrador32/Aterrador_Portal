@@ -130,10 +130,7 @@ function applyConfig(cfg) {
       const t = blocked.querySelector(".pdf-blocked-title");
       const s = blocked.querySelector(".pdf-blocked-sub");
       if (t) t.textContent = "Bus schedule not uploaded yet";
-      if (s)
-        s.innerHTML =
-          "Add <strong>busScheduleEmbed</strong> and <strong>busSchedulePdf</strong> " +
-          "keys to the Settings sheet — see instructions below.";
+      if (s) s.innerHTML = "<strong>Patience</strong> " + "is the key.";
     }
     return;
   }

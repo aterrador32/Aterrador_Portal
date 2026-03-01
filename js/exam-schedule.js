@@ -338,8 +338,7 @@ function renderTutorialGrid() {
     else if (past)
       statusHtml = `<div class="tut-status done">✓ Completed</div>`;
     else
-      statusHtml = `<div class="tut-status upcoming"><div class="mode-dot"></div>Upcoming · ${daysUntil(e.date)}d</div>`;
-
+      statusHtml = `<div class="tut-status upcoming"> <div class="mode-dot"></div>Upcoming · ${daysUntil(e.date)}d at ${fmtTime12(e.startTime)}</div>`;
     const card = document.createElement("div");
     card.className = `tut-card${past && !tod ? " past" : ""}`;
     card.style.borderColor =
@@ -473,12 +472,20 @@ function normDate(v) {
 function normTime(v) {
   if (!v) return "09:00";
   const s = String(v).trim();
+
   if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(s)) {
     const p = s.split(":");
     return String(parseInt(p[0])).padStart(2, "0") + ":" + p[1];
   }
-  const tm = s.match(/(\d{1,2}):(\d{2}):\d{2}/);
-  if (tm) return String(parseInt(tm[1])).padStart(2, "0") + ":" + tm[2];
+  const ampm = s.match(/(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)/i);
+  if (ampm) {
+    let h = parseInt(ampm[1]);
+    const m = ampm[2];
+    const period = ampm[3].toUpperCase();
+    if (period === "PM" && h < 12) h += 12;
+    if (period === "AM" && h === 12) h = 0;
+    return String(h).padStart(2, "0") + ":" + m;
+  }
   return "09:00";
 }
 
@@ -512,6 +519,7 @@ async function loadExams() {
       .filter((r) => r.date && r.course)
       .map((r) => ({
         date: normDate(r.date),
+        startTime: normTime(r.startTime || "09:00"),
         course: String(r.course || "").trim(),
         name: String(r.name || "").trim(),
         teacher: String(r.teacher || "").trim(),
@@ -602,7 +610,7 @@ function initExams(mode) {
     if (tutSec) tutSec.style.display = "";
     buildCountdown(
       TUTORIAL_EXAMS,
-      (e) => parseDate(e.date),
+      (e) => parseDate(e.date, e.startTime),
       "tut-countdown-wrap",
       "tut-list",
       false,

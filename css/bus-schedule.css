@@ -45,6 +45,50 @@ button:focus-visible {
     transform: rotate(360deg);
   }
 }
+.bs-spin {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 107, 0, 0.15);
+  border-top-color: var(--or);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.bs-loading {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(40px, 8vw, 80px) var(--pad);
+  background: var(--bk);
+}
+
+.bs-loading-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.bs-load-txt {
+  font-family: var(--m2);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--txd);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
 /* scanlines */
 body::before {
   content: "";
