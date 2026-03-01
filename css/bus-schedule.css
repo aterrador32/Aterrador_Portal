@@ -37,7 +37,14 @@ button:focus-visible {
   outline: 2px solid var(--or);
   outline-offset: 3px;
 }
-
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 /* scanlines */
 body::before {
   content: "";
