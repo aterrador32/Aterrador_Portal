@@ -66,11 +66,10 @@ const FALLBACK_PALETTE = {
 let PALETTE = {};
 
 /* Helper: get palette entry for a course code, with graceful fallback */
-function pal(code) {
+function pal(code, type) {
   return (
     PALETTE[code] ||
-    PALETTE["LAB"] || {
-      // if code contains 'lab' in the name
+    (type === "Lab" ? PALETTE["LAB"] : null) || {
       bg: "rgba(255,255,255,.08)",
       bdr: "rgba(255,255,255,.3)",
       tx: "#aaaaaa",
@@ -329,7 +328,7 @@ function renderTimetable() {
 
       const top = (startM - GRID_START) * PX_PER_MIN;
       const h = dur * PX_PER_MIN;
-      const c = pal(s.course);
+      const c = pal(s.course, s.type);
       const isLab = s.type === "Lab";
 
       const block = document.createElement("div");
@@ -526,12 +525,62 @@ async function loadRoutine() {
     initTimetable();
   } catch (err) {
     console.warn(
-      "[Routine] Sheet load failed — using fallback. Reason:",
-      err.message,
+      `[Routine] First attempt failed (${err.message}) — retrying in 3s…`,
     );
-    PALETTE = FALLBACK_PALETTE;
-    SCHEDULE = FALLBACK_SCHEDULE;
-    initTimetable();
+    setTimeout(async () => {
+      try {
+        const res2 = await fetch(apiUrl("Routine"), { cache: "no-cache" });
+        if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
+        const routRows = await res2.json();
+
+        let palRows2 = [];
+        try {
+          const rp = await fetch(apiUrl("Palette"), { cache: "no-cache" });
+          if (rp.ok) palRows2 = await rp.json();
+        } catch (_) {}
+
+        if (Array.isArray(palRows2) && palRows2.length) {
+          PALETTE = {};
+          palRows2
+            .filter((r) => r.course)
+            .forEach((r) => {
+              PALETTE[String(r.course).trim()] = {
+                bg: String(r.bg || "rgba(255,255,255,.08)").trim(),
+                bdr: String(r.bdr || "#888").trim(),
+                tx: String(r.tx || "#aaa").trim(),
+              };
+            });
+        } else {
+          PALETTE = FALLBACK_PALETTE;
+        }
+
+        SCHEDULE = routRows
+          .filter((r) => r.day && r.start && r.end)
+          .map((r) => ({
+            day: String(r.day).trim(),
+            start: normaliseTime(r.start),
+            end: normaliseTime(r.end),
+            course: String(r.course || "").trim(),
+            name: String(r.name || "").trim(),
+            teacher: String(r.teacher || "").trim(),
+            room: String(r.room || "").trim(),
+            type: String(r.type || "Theory").trim(),
+          }));
+
+        console.info(
+          `[Routine] Retry succeeded — loaded ${SCHEDULE.length} classes.`,
+        );
+        initTimetable();
+      } catch (err2) {
+        console.warn(
+          "[Routine] Retry also failed — using fallback:",
+          err2.message,
+        );
+        PALETTE = FALLBACK_PALETTE;
+        SCHEDULE = FALLBACK_SCHEDULE;
+        initTimetable();
+      }
+    }, 3000);
   }
 }
 
@@ -539,26 +588,20 @@ function normaliseTime(t) {
   if (!t) return "00:00";
   const s = String(t).trim();
 
-  const dateStr = s.match(/\d{4}\s+(\d{1,2}):(\d{2}):\d{2}/);
-  if (dateStr) {
-    return String(parseInt(dateStr[1])).padStart(2, "0") + ":" + dateStr[2];
+  const jsDate = s.match(/\b(\d{1,2}):(\d{2}):\d{2}\s+GMT/);
+  if (jsDate) {
+    return String(parseInt(jsDate[1])).padStart(2, "0") + ":" + jsDate[2];
+  }
+
+  const serial = s.match(/\d{4}\s+(\d{1,2}):(\d{2}):\d{2}/);
+  if (serial) {
+    return String(parseInt(serial[1])).padStart(2, "0") + ":" + serial[2];
   }
 
   const parts = s.split(":");
   const h = String(parseInt(parts[0]) || 0).padStart(2, "0");
   const m = String(parseInt(parts[1]) || 0).padStart(2, "0");
   return `${h}:${m}`;
-}
-
-function iframeReady() {
-  /* kept for safety — not called */
-}
-function iframeBlocked() {
-  showCalBlocked();
-}
-function showCalBlocked() {
-  const blocked = document.getElementById("cal-blocked");
-  if (blocked) blocked.style.display = "flex";
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -579,7 +622,8 @@ function renderLegend() {
     leg.appendChild(t);
   }
   used.forEach((code) => {
-    const c = pal(code);
+    const entry = SCHEDULE.find((s) => s.course === code);
+    const c = pal(code, entry ? entry.type : "Theory");
     const item = document.createElement("div");
     item.className = "leg-item";
     item.innerHTML = `<div class="l-swatch" style="background:${c.bg};border-color:${c.bdr}"></div>${code}`;
@@ -594,11 +638,12 @@ loadRoutine();
   if (window.location.protocol === "file:") return;
   try {
     const ctrl = new AbortController();
-    setTimeout(() => ctrl.abort(), 10000);
+    const tid = setTimeout(() => ctrl.abort(), 10000);
     const res = await fetch(apiUrl("Settings"), {
       cache: "no-cache",
       signal: ctrl.signal,
     });
+    clearTimeout(tid);
     if (!res.ok) return;
     const rows = await res.json();
     console.log("[Routine] Settings:", rows);
