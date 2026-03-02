@@ -329,7 +329,7 @@ function renderTutorialGrid() {
   sorted.forEach((e) => {
     const d = parseDate(e.date);
     const c = pal(e.course);
-    const past = isPast(e.date);
+    const past = isPast(e.date, e.startTime);
     const tod = isToday(e.date);
 
     let statusHtml;
@@ -470,13 +470,43 @@ function normDate(v) {
   return s;
 }
 function normTime(v) {
-  if (!v) return "09:00";
+  if (!v && v !== 0) return "09:00";
+
+  // Handle actual Date objects
+  if (v instanceof Date) {
+    if (!isNaN(v.getTime())) {
+      return (
+        String(v.getHours()).padStart(2, "0") +
+        ":" +
+        String(v.getMinutes()).padStart(2, "0")
+      );
+    }
+  }
+
+  // Handle Date stringified by JSON (e.g. "Sat Dec 30 1899 08:45:00 GMT+0553 ...")
+  const s0 = String(v);
+  const dtMatch = s0.match(/\d{1,2}:\d{2}:\d{2}/);
+  if (dtMatch) {
+    const [h, m] = dtMatch[0].split(":").map(Number);
+    return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+  }
+  const num = parseFloat(v);
+  if (!isNaN(num) && num >= 0 && num < 1) {
+    const totalMins = Math.round(num * 24 * 60);
+    const h = Math.floor(totalMins / 60);
+    const m = totalMins % 60;
+    return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+  }
+
   const s = String(v).trim();
 
+  // Already HH:MM or HH:MM:SS
   if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(s)) {
     const p = s.split(":");
     return String(parseInt(p[0])).padStart(2, "0") + ":" + p[1];
   }
+
+  // 12h format like "10:00 AM"
   const ampm = s.match(/(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)/i);
   if (ampm) {
     let h = parseInt(ampm[1]);
@@ -486,9 +516,9 @@ function normTime(v) {
     if (period === "AM" && h === 12) h = 0;
     return String(h).padStart(2, "0") + ":" + m;
   }
+
   return "09:00";
 }
-
 async function loadExams() {
   showLoading();
 
@@ -610,7 +640,7 @@ function initExams(mode) {
     if (tutSec) tutSec.style.display = "";
     buildCountdown(
       TUTORIAL_EXAMS,
-      (e) => parseDate(e.date, e.startTime),
+      (e) => parseDateTime(e.date, e.startTime),
       "tut-countdown-wrap",
       "tut-list",
       false,
