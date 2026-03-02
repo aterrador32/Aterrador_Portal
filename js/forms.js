@@ -56,7 +56,8 @@ function fmtDL(iso) {
     m = d.getMinutes();
   const ampm = h >= 12 ? "PM" : "AM";
   const hh = h % 12 || 12;
-  return `${d.getDate()} ${MOS[d.getMonth()]} ${d.getFullYear()}, ${hh}:${pad(m)} ${ampm}`;
+
+  return `${d.getDate()} ${MOS[d.getMonth()]} ${d.getFullYear()}, ${hh}:${String(m).padStart(2, "0")} ${ampm}`;
 }
 
 /* ══════ RENDER CARDS ══════ */
