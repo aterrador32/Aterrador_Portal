@@ -294,11 +294,115 @@ function updateCount() {
   const rc = document.getElementById("rcount");
   if (rc) rc.textContent = `${total} files`;
 }
+/* ══════════════════════════════════════════════════════════
+   RENDER — CLASSROOM CODES & MEET LINKS
+════════════════════════════════════════════════════════════ */
+function renderClassInfo(rows) {
+  const validRows = rows.filter((r) => r.courseCode);
+  const codeRows = validRows.filter((r) =>
+    String(r.classroomCode || "").trim(),
+  );
+  const linkRows = validRows.filter((r) => String(r.meetLink || "").trim());
 
+  // ── Classroom Codes ──
+  const cSec = document.getElementById("section-classroom");
+  const cGrid = document.getElementById("classroom-grid");
+  if (cSec && cGrid) {
+    if (codeRows.length) {
+      cSec.style.display = "";
+      cGrid.innerHTML = "";
+      codeRows.forEach((r) => {
+        const code = String(r.courseCode || "").trim();
+        const name = String(r.courseName || "").trim();
+        const value = String(r.classroomCode || "").trim();
+        const card = document.createElement("div");
+        card.className = "ci-card";
+        card.innerHTML = `
+          <div class="ci-card-top">
+            <div class="ci-card-ico">🎓</div>
+            <div>
+              <div class="ci-card-label">Google Classroom</div>
+              <div class="ci-card-course">${code}</div>
+              ${name ? `<div class="ci-card-name">${name}</div>` : ""}
+              <div class="ci-card-value">${value}</div>
+            </div>
+          </div>
+          <div class="ci-card-actions">
+            <button class="ci-copy-btn" onclick="ciCopy('${value}', this)">Copy Code</button>
+            <a href="https://classroom.google.com" target="_blank" rel="noopener noreferrer" class="ci-open-btn">Open Classroom ↗</a>
+          </div>
+        `;
+        cGrid.appendChild(card);
+      });
+    } else {
+      cSec.style.display = "none";
+    }
+  }
+
+  // ── Meet Links ──
+  const mSec = document.getElementById("section-meetlinks");
+  const mGrid = document.getElementById("meetlink-grid");
+  if (mSec && mGrid) {
+    if (linkRows.length) {
+      mSec.style.display = "";
+      mGrid.innerHTML = "";
+      linkRows.forEach((r) => {
+        const code = String(r.courseCode || "").trim();
+        const name = String(r.courseName || "").trim();
+        const url = String(r.meetLink || "").trim();
+        const label = String(r.meetLabel || "Online Class").trim();
+        const lb = label.toLowerCase();
+        const ico = lb.includes("zoom")
+          ? "🟦"
+          : lb.includes("meet")
+            ? "🟢"
+            : lb.includes("teams")
+              ? "🟣"
+              : "🔗";
+        const card = document.createElement("div");
+        card.className = "ci-card";
+        card.innerHTML = `
+          <div class="ci-card-top">
+            <div class="ci-card-ico">${ico}</div>
+            <div style="min-width:0">
+              <div class="ci-card-label">${label}</div>
+              <div class="ci-card-course">${code}</div>
+              ${name ? `<div class="ci-card-name">${name}</div>` : ""}
+              <div class="ci-card-value" style="font-size:11px;letter-spacing:.5px;color:var(--txd);word-break:break-all">${url}</div>
+            </div>
+          </div>
+          <div class="ci-card-actions">
+            <button class="ci-copy-btn" onclick="ciCopy('${url}', this)">Copy Link</button>
+            <a href="${url}" target="_blank" rel="noopener noreferrer" class="ci-open-btn">Join Class ↗</a>
+          </div>
+        `;
+        mGrid.appendChild(card);
+      });
+    } else {
+      mSec.style.display = "none";
+    }
+  }
+}
+
+function ciCopy(val, btn) {
+  navigator.clipboard
+    .writeText(val)
+    .then(() => {
+      const orig = btn.textContent;
+      btn.textContent = "Copied ✓";
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.classList.remove("copied");
+      }, 2000);
+    })
+    .catch(() => {});
+}
 /* ══════════════════════════════════════════════════════════
    RESOURCE LOADER
 ════════════════════════════════════════════════════════════ */
 async function loadResources() {
+  let ciRowsData = [];
   const courseList = document.getElementById("course-list");
   if (courseList) {
     courseList.innerHTML =
@@ -307,16 +411,16 @@ async function loadResources() {
   }
 
   try {
-    const [resRes, senRes] = await Promise.all([
+    const [resRes, senRes, ciRes] = await Promise.all([
       fetch(apiUrl("Resources"), { cache: "no-cache" }),
       fetch(apiUrl("SeniorResources"), { cache: "no-cache" }),
+      fetch(apiUrl("ClassInfo"), { cache: "no-cache" }),
     ]);
     if (!resRes.ok) throw new Error(`Resources HTTP ${resRes.status}`);
     if (!senRes.ok) throw new Error(`SeniorResources HTTP ${senRes.status}`);
-
     const resRows = await resRes.json();
     const senRows = await senRes.json();
-
+    ciRowsData = await ciRes.json().catch(() => []);
     // Build COURSES
     const courseMap = new Map();
     resRows
@@ -368,9 +472,15 @@ async function loadResources() {
     console.error("[Resources] Fetch failed:", err);
     COURSES = [];
     SENIOR_RESOURCES = [];
+    renderCourses();
+    renderClassInfo([]);
+    renderSenior();
+    updateCount();
+    return;
   }
 
   renderCourses();
+  renderClassInfo(ciRowsData);
   renderSenior();
   updateCount();
 }
