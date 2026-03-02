@@ -164,13 +164,14 @@ function renderTable() {
   DATA.forEach((t) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><span class="tbl-code" style="background:${t.color}20;border:1px solid ${t.color}44;color:${t.color}">${t.code}</span></td>
-      <td><span class="tbl-cname">${t.course}</span></td>
-      <td><span class="tbl-name">${t.name}</span></td>
-      <td><span class="tbl-desig">${t.designation}</span></td>
-      <td><a href="mailto:${t.email}" class="tbl-link">${t.email}</a></td>
-      <td><a href="tel:${t.cell.replace(/\s/g, "")}" class="tbl-link">${t.cell}</a></td>
-    `;
+  <td><span class="tbl-code" style="background:${t.color}20;border:1px solid ${t.color}44;color:${t.color}">${t.code}</span></td>
+  <td><span class="tbl-cname">${t.course}</span></td>
+  <td><span class="tbl-type">${t.type}</span></td>
+  <td><span class="tbl-name">${t.name}</span></td>
+  <td><span class="tbl-desig">${t.designation}</span></td>
+  <td><a href="mailto:${t.email}" class="tbl-link">${t.email}</a></td>
+  <td><a href="tel:${t.cell.replace(/\s/g, "")}" class="tbl-link">${t.cell}</a></td>
+`;
     tbody.appendChild(tr);
   });
 }
