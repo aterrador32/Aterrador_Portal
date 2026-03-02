@@ -624,15 +624,32 @@ loadRoutine();
     const univUrl = cfg.universitycalendarurl || "";
     if (univUrl) {
       const calIframe = document.getElementById("cal-iframe");
+      const calLoader = document.getElementById("cal-loader");
       const calBtn = document.getElementById("univ-cal-btn");
       const calExt = document.querySelector(".cal-ext-btn");
-      if (calIframe) {
-        calIframe.src = univUrl;
-        calIframe.setAttribute("allow", "autoplay");
+
+      // Convert any Drive URL to a proper preview embed URL
+      let embedUrl = univUrl;
+      const driveMatch = univUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (driveMatch) {
+        embedUrl = `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
       }
-      if (calBtn) calBtn.href = univUrl.replace("/preview", "/view");
-      if (calExt) calExt.href = univUrl.replace("/preview", "/view");
-      console.info("[Routine] University calendar URL:", univUrl);
+
+      const viewUrl = univUrl.replace("/preview", "/view");
+
+      if (calIframe) {
+        calIframe.src = embedUrl;
+        calIframe.onload = () => {
+          if (calLoader) calLoader.classList.add("gone");
+        };
+        // Fallback: if still loading after 8s, hide loader anyway
+        setTimeout(() => {
+          if (calLoader) calLoader.classList.add("gone");
+        }, 8000);
+      }
+      if (calBtn) calBtn.href = viewUrl;
+      if (calExt) calExt.href = viewUrl;
+      console.info("[Routine] University calendar URL:", embedUrl);
     }
 
     // ── academic sheet embed ──
