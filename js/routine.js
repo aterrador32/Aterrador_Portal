@@ -628,7 +628,6 @@ loadRoutine();
       const calBtn = document.getElementById("univ-cal-btn");
       const calExt = document.querySelector(".cal-ext-btn");
 
-      // Convert any Drive URL to a proper preview embed URL
       let embedUrl = univUrl;
       const driveMatch = univUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
       if (driveMatch) {
