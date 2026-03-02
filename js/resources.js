@@ -1,81 +1,4 @@
 "use strict";
-document.getElementById("yr").textContent = new Date().getFullYear();
-
-/* ══════════════════════════════════════════════════════════
-   CONFIG
-════════════════════════════════════════════════════════════ */
-const GOOGLE_CLIENT_ID =
-  "820667040088-fme7kg1mg93jg33u777idd7jl20927am.apps.googleusercontent.com";
-
-const DEV_PREVIEW_MODE = false;
-const DEV_USER = {
-  name: "Preview User",
-  email: "dev@aterrador.local",
-  picture: null,
-};
-
-/* ══════════════════════════════════════════════════════════
-   ALLOWED EMAIL HASHES
-════════════════════════════════════════════════════════════ */
-const ALLOWED_HASHES = new Set([
-  "0d5bbf28e6f1818cd12a7f1b04538a50f800b4bbfbe6c7f70764089e3ba149d1",
-  "123044709e41392feedbfa4492cdbb67d2605cfb6b68bb96b6466e137ffd6a66",
-  "ad224bb419623a62a8ef2bcd87e1babb93c3b1b36e7e06f5dcd46d1691e452b1",
-  "3b39f3f21a4738e3214b8184978ef3ab14552d884f081217c889dc4b3a5e563e",
-  "3ef6e699949c2438ef8ee059c73aa56902c90b20c1118bbbb5789025bc913424",
-  "c54c1150af925ee4f48a4b902208aaaa250d071a64ec78c42cc801687c441905",
-  "1032a850ef8f82cfbb8e455b3bd15a1458119a6ee5eec32617832eae465ba483",
-  "e33d24d12d4f898d61e7ecce4be8fddc5ed5e0e537d9404eea0a376d63d68a29",
-  "ef2707fde007bdff080d2e05fa03001aad8ec53bff0f7e6aa95cbe95c2bad504",
-  "ee870c9c91f63ade2b39b7ea59ca8a3b670eff50d02fb056268dbd3394413ee4",
-  "6ca54c55f8f50c0664d7f715300c7d7fd58ff0cc304853d4e3942ee0b5d3b807",
-  "2b1fb80b205cd33a27f735e6148dcc3bf0813361c4811b2eefc2da2e2bb89141",
-  "7c7150af687718edbad1b993211d212cdd2f1ae10a97d36f58c0f9d99591b24c",
-  "ee8f673fd0e80e4fae085615c06cedd5e7dc9b3b88892f498d1bb5880e120116",
-  "8f637cee62089262fdc7d90289ab2a91a2c580fc65b96259796981052386ee76",
-  "51a103639c020c09cd0718499a787a02d059a73287e88b805ef768da9934f648",
-  "e2251a05a6954cddf3f73475e27f46a0e08df864ba6ce395e8fb9379a76f3cc3",
-  "5c8649018a53ac90c8216a9149ec13abdd9f9849185b3b0667b3ead33b3cebf6",
-  "8611b69ff714fd25ef0ce0fc6a643ed9c405f6ac1a96701749444b933ce1b4eb",
-  "f908b298616e5cd13e4dddf423963819d31e7c71eeaf9229063f3ca64fef8212",
-  "7a07caad039484cebde361ac3988c586514cf5b3aaf94ba9dddeeeb31e289d9e",
-  "5efd44644f9c28c7689d0681c37d9beb7291dfb78536275e3ce6d90ef4dc50ee",
-  "88b83a935b3225eda0ef561ccf54bc7e7299e4063e45a05241c9d1d9f909b777",
-  "cb03d825858ae41b67424d063b70431f0d5ed16128a0372b2a9fbb3ddb40edd5",
-  "c054b43bf4a69074cbee47168ce29faacbb7ee2fef51571f25c703957b793221",
-  "9e43e31d1f9aa54d9363f699d570e27f620f742821dad52f552d95e3b485990c",
-  "b1764b31ac6a64cb5ac6aa147878701919b505edf0f468c50dae3322d00d4442",
-  "943841467e3c101bc86d095516daa01f4ce6d376f7c0f295470f10246b3a8dc1",
-  "eea09408193dc913d2e16f2fcfdb3a2ed732bb7d4705786a287f3c699bcc7f55",
-  "92df7a8be0aa73c5a9187d0248c46ed744da3f42625281abac0526dc5ea61b36",
-  "1b8d96cf965267a10b54262f28f8aafd0f59e32858d7df1be2328ef87f70f993",
-  "d13f5d0d48349dceffe456e2b97d4e8a150a5c2442e3822b84e4fdadcba66494",
-  "e45945208dba913440fd5cd63214663296205f6b744202c7cb3768299bad3ba1",
-  "f3c8908e0e663a3ce06d2471cb5b29e5c0a4b33c03e5ca9245d665ca4f6dd18e",
-  "e5e263f6db08ae888420b23ddc3c94f2c2f33db2b45019a673a3e33d06fcc35a",
-  "b1e8e069e23b7bfe85364e7b86bd8ac852efd429cca1d7024807bc1df7eb99c6",
-  "db461ac389f921f6ba16c7e8cc4ef7cd8b13d5e736b8bc0a195e71aa849c4b40",
-  "c6dc89bf76c9d5e9955d8529fcd61b7960ce2d5c36cfdcbcfc6d3d696e3da666",
-  "8945de2026e1ae63035fba9f514035dd631a69e08f11768ad3ff848ac5eb23e9",
-  "7dcc9828891886e20750e080bb33f17fb4e1d98136af2b552d604cabec2edf20",
-  "3e0bc8f387726ed89595060e12bf45038e891b2562268d1ac9987071dd3cd856",
-  "cd728b26f2e4c8d045113cf2e2f36360d84fbfa738ff2a9e1191944558ef9d7c",
-  "033ee277852994bb2777ba0c329aa5ca01a68858b125ee7fbb3e0422b2140749",
-  "7cb0f5baa6d5bd9cbe9431dfc9f87bfbd63e7349ca7fa319b72802e7390c582c",
-  "02a46d24457e761ec1fa2440f63b3b40a7ce00d22f31b4c85112782d4154303d",
-  "d1fa84c29a4b9db2fd5771cf73a8263f361d545ecc450e32632724be5fdffa25",
-  "fac8d0fd1d91a5dc283f85979bd3f1d4f47823440e273f322c7746b5ff862d87",
-  "16a1796142487bb0d7de5d2f30591daa68be2e518e7656ae3962326461c7f19c",
-  "5c07a54854321c0956b5aa967ba6021749c80a2d8a4f6672e99911724ed19c18",
-  "23be65cfe9ece7282e10db0fe8bb717c4d303ef02f33775a35e467e43550759f",
-  "923b33cf1ab7a997899221cb0ae7acf71f09e79c658176defc26c55a6d46a3bc",
-  "a6b249bc930929c247b6cb2a8267a0e8403a0420395eb8f3b7130bc3ada96390",
-]);
-/* ══════════════════════════════════════════════════════════
-   DATA
-════════════════════════════════════════════════════════════ */
-let COURSES = [];
-let SENIOR_RESOURCES = [];
 
 /* ══════════════════════════════════════════════════════════
    COLOUR MAPS
@@ -108,6 +31,54 @@ const TYPE_STYLE = {
     border: "rgba(255,200,60,.3)",
   },
 };
+
+let COURSES = [];
+let SENIOR_RESOURCES = [];
+
+/* ══════════════════════════════════════════════════════════
+   AUTH-GATE LOADING SPINNER
+════════════════════════════════════════════════════════════ */
+function showGateSpinner(on) {
+  let el = document.getElementById("ag-spinner");
+  if (on) {
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "ag-spinner";
+      el.innerHTML = `
+        <div class="ags-ring"></div>
+        <div class="ags-txt">Verifying access list…</div>`;
+      // Insert just before the sign-in button wrapper
+      const btnWrap = document.querySelector(".ag-btn-wrap");
+      if (btnWrap) btnWrap.parentNode.insertBefore(el, btnWrap);
+    }
+    el.style.display = "flex";
+  } else {
+    if (el) el.style.display = "none";
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   RENDER — ROSTER PILLS
+════════════════════════════════════════════════════════════ */
+function renderRoster() {
+  const grid = document.getElementById("ag-roster-grid");
+  const countEl = document.querySelector(".ag-roster-count");
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  ACCESS_ROSTER.forEach(({ hash, label }, i) => {
+    const pill = document.createElement("div");
+    pill.className = "ag-pill";
+    pill.dataset.hash = hash;
+    pill.title = label || `Member #${String(i + 1).padStart(2, "0")}`;
+    const num = String(i + 1).padStart(2, "0");
+    pill.innerHTML = `<span class="ag-pill-num">${num}</span>`;
+    grid.appendChild(pill);
+  });
+
+  if (countEl) countEl.textContent = `${ACCESS_ROSTER.length} accounts`;
+}
 
 /* ══════════════════════════════════════════════════════════
    RENDER — COURSES
@@ -164,8 +135,7 @@ function renderCourses() {
             })
             .join("")}
         </div>
-      </div>
-    `;
+      </div>`;
     list.appendChild(block);
   });
 }
@@ -206,12 +176,10 @@ function renderSenior() {
             <span class="sc-file-ico">${f.icon}</span>
             <span>${f.name}</span>
             <span style="margin-left:auto;color:rgba(255,200,60,.5);font-size:10px">↗</span>
-          </a>
-        `,
+          </a>`,
           )
           .join("")}
-      </div>
-    `;
+      </div>`;
     grid.appendChild(card);
   });
 }
@@ -294,6 +262,7 @@ function updateCount() {
   const rc = document.getElementById("rcount");
   if (rc) rc.textContent = `${total} files`;
 }
+
 /* ══════════════════════════════════════════════════════════
    RENDER — CLASSROOM CODES & MEET LINKS
 ════════════════════════════════════════════════════════════ */
@@ -304,7 +273,6 @@ function renderClassInfo(rows) {
   );
   const linkRows = validRows.filter((r) => String(r.meetLink || "").trim());
 
-  // ── Classroom Codes ──
   const cSec = document.getElementById("section-classroom");
   const cGrid = document.getElementById("classroom-grid");
   if (cSec && cGrid) {
@@ -330,8 +298,7 @@ function renderClassInfo(rows) {
           <div class="ci-card-actions">
             <button class="ci-copy-btn" onclick="ciCopy('${value}', this)">Copy Code</button>
             <a href="https://classroom.google.com" target="_blank" rel="noopener noreferrer" class="ci-open-btn">Open Classroom ↗</a>
-          </div>
-        `;
+          </div>`;
         cGrid.appendChild(card);
       });
     } else {
@@ -339,7 +306,6 @@ function renderClassInfo(rows) {
     }
   }
 
-  // ── Meet Links ──
   const mSec = document.getElementById("section-meetlinks");
   const mGrid = document.getElementById("meetlink-grid");
   if (mSec && mGrid) {
@@ -374,8 +340,7 @@ function renderClassInfo(rows) {
           <div class="ci-card-actions">
             <button class="ci-copy-btn" onclick="ciCopy('${url}', this)">Copy Link</button>
             <a href="${url}" target="_blank" rel="noopener noreferrer" class="ci-open-btn">Join Class ↗</a>
-          </div>
-        `;
+          </div>`;
         mGrid.appendChild(card);
       });
     } else {
@@ -398,6 +363,7 @@ function ciCopy(val, btn) {
     })
     .catch(() => {});
 }
+
 /* ══════════════════════════════════════════════════════════
    RESOURCE LOADER
 ════════════════════════════════════════════════════════════ */
@@ -421,7 +387,7 @@ async function loadResources() {
     const resRows = await resRes.json();
     const senRows = await senRes.json();
     ciRowsData = await ciRes.json().catch(() => []);
-    // Build COURSES
+
     const courseMap = new Map();
     resRows
       .filter((r) => r.courseCode && r.fileName)
@@ -447,7 +413,6 @@ async function loadResources() {
       });
     COURSES = [...courseMap.values()];
 
-    // Build SENIOR_RESOURCES
     const senMap = new Map();
     senRows
       .filter((r) => r.batch && r.fileName)
@@ -490,13 +455,25 @@ async function loadResources() {
 ════════════════════════════════════════════════════════════ */
 let currentUser = null;
 
-window.onload = function () {
+window.onload = async function () {
   if (DEV_PREVIEW_MODE) {
     grantAccess(DEV_USER);
     return;
   }
 
-  // Restore saved session
+  // ── Show spinner & fetch access list ──
+  showGateSpinner(true);
+  try {
+    await fetchAccessList();
+  } catch (e) {
+    console.error("[Auth] fetchAccessList failed:", e);
+    // Non-fatal: roster won't render, but we can still attempt sign-in
+    // (checkAccess will fail gracefully with an empty set)
+  }
+  renderRoster();
+  showGateSpinner(false);
+
+  // ── Restore saved session ──
   const saved = sessionStorage.getItem("aterrador_user");
   if (saved) {
     try {
@@ -526,7 +503,6 @@ function startSignIn() {
     cancel_on_tap_outside: false,
   });
 
-  // Use renderButton on a hidden helper div — most reliable cross-browser approach
   let helper = document.getElementById("_g_helper");
   if (!helper) {
     helper = document.createElement("div");
@@ -536,14 +512,12 @@ function startSignIn() {
     document.body.appendChild(helper);
   }
   helper.innerHTML = "";
-
   google.accounts.id.renderButton(helper, {
     type: "standard",
     theme: "filled_black",
     size: "large",
   });
 
-  // Click the rendered button after it's injected
   setTimeout(() => {
     const rendered =
       helper.querySelector('[role="button"]') ||
@@ -636,7 +610,6 @@ function grantAccess(user) {
     }
   })();
 
-  // Populate user pill — safe null checks
   const avatarEl = document.getElementById("user-avatar");
   const nameEl = document.getElementById("user-name");
   const emailEl = document.getElementById("user-email");
@@ -651,7 +624,6 @@ function grantAccess(user) {
   if (nameEl) nameEl.textContent = user.name || "—";
   if (emailEl) emailEl.textContent = user.email || "—";
 
-  // Switch views
   const gate = document.getElementById("auth-gate");
   const portal = document.getElementById("resource-portal");
   if (gate) gate.style.display = "none";
@@ -725,7 +697,7 @@ window.addEventListener(
 );
 
 /* ══════════════════════════════════════════════════════════
-   SEMESTER — fetch from Settings sheet
+   SEMESTER 
 ════════════════════════════════════════════════════════════ */
 (async function loadSemester() {
   if (window.location.protocol === "file:") return;
@@ -752,6 +724,6 @@ window.addEventListener(
     });
     console.info("[Resources] Semester:", sem);
   } catch (e) {
-    /* silent */
+    /* teri awaj na aye, ekdam chup */
   }
 })();
