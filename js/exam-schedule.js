@@ -402,23 +402,23 @@ function renderFinalTable() {
     const tr = document.createElement("tr");
     tr.className = `${tod ? "today-row" : ""}${past && !tod ? " past-row" : ""}`;
     tr.innerHTML = `
-      <td>
-        <div class="f-date-cell">
-          <span class="f-date-main">${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}</span>
-          <span class="f-date-day">${WEEKDAYS[d.getDay()]}</span>
-        </div>
-      </td>
-      <td><span class="f-code-pill" style="background:${c.bg};border:1px solid ${c.bdr};color:${c.tx}">${e.course}</span></td>
-      <td style="font-family:var(--m1);font-size:13px;color:#fff">${e.name}</td>
-      <td>
-        <div class="f-time-cell">
-          <span class="f-time-main">${fmtTime12(e.startTime)} – ${fmtTime12(endT)}</span>
-          <span class="f-time-dur">${dur}</span>
-        </div>
-      </td>
-      <td><span class="f-room">${e.room}</span></td>
-      <td>${statusHtml}</td>
-    `;
+  <td>
+    <div class="f-date-cell">
+      <span class="f-date-main">${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}</span>
+      <span class="f-date-day">${WEEKDAYS[d.getDay()]}</span>
+    </div>
+  </td>
+  <td><span class="f-code-pill" style="background:${c.bg};border:1px solid ${c.bdr};color:${c.tx}">${e.course}</span></td>
+  <td style="font-family:var(--m1);font-size:13px;color:#fff">${e.name}</td>
+  <td>
+    <div class="f-time-cell">
+      <span class="f-time-main">${fmtTime12(e.startTime)} – ${fmtTime12(endT)}</span>
+    </div>
+  </td>
+  <td><span class="f-time-dur">${dur}</span></td>
+  <td><span class="f-room">${e.room}</span></td>
+  <td>${statusHtml}</td>
+`;
     tbody.appendChild(tr);
   });
 }
