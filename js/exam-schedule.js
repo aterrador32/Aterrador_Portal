@@ -300,13 +300,18 @@ function buildCountdown(exams, getTarget, wrapId, listId, isFinal) {
 
     const list = document.createElement("div");
     list.className = "upcoming-list";
-    const sorted = [...exams].sort((a, b) => getTarget(a) - getTarget(b));
+    const sorted = [...exams].sort((a, b) => {
+      if (a.date === "NOT_ANNOUNCED") return 1;
+      if (b.date === "NOT_ANNOUNCED") return -1;
+      return getTarget(a) - getTarget(b);
+    });
     sorted.forEach((e, i) => {
-      const target = getTarget(e);
+      const target =
+        e.date === "NOT_ANNOUNCED" ? new Date(8640000000000000) : getTarget(e);
       const past = target < now;
       const todayE = isToday(e.date);
       const isNext = next && target.getTime() === next._target.getTime();
-      const du = daysUntil(e.date);
+      const du = e.date === "NOT_ANNOUNCED" ? null : daysUntil(e.date);
       const c = pal(e.course);
 
       const item = document.createElement("div");
@@ -319,12 +324,12 @@ function buildCountdown(exams, getTarget, wrapId, listId, isFinal) {
       else if (isNext)
         statusHtml = `<span class="upc-days" style="color:var(--or)">Next · ${du}d away</span>`;
       else
-        statusHtml = `<span class="upc-days" style="color:var(--txd)">${du}d away</span>`;
+        statusHtml = `<span class="upc-days" style="color:var(--txd)">${du !== null ? du + "d away" : "Date TBA"}</span>`;
 
       item.innerHTML = `
         <span class="upc-code" style="background:${c.bg};border:1px solid ${c.bdr};color:${c.tx}">${e.course}</span>
         <span class="upc-name">${e.name}</span>
-        <span class="upc-date">${dayOfWeek(target).slice(0, 3)}, ${fmtDate(target)}${isFinal ? ` · ${fmtTime12(e.startTime)}` : ""}</span>
+        <span class="upc-date">${e.date === "NOT_ANNOUNCED" ? "Date TBA" : `${dayOfWeek(target).slice(0, 3)}, ${fmtDate(target)}${isFinal ? ` · ${fmtTime12(e.startTime)}` : ""}`}${isFinal ? ` · ${fmtTime12(e.startTime)}` : ""}</span>
         ${statusHtml}
       `;
       list.appendChild(item);
