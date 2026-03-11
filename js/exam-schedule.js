@@ -493,9 +493,9 @@ function showMain() {
   document.getElementById("es-main").style.display = "block";
 }
 function normDate(v) {
-  if (!v || v === "" || v === null) return "NOT_ANNOUNCED";
-
+  if (!v || v === "" || v === null || v === undefined) return "NOT_ANNOUNCED";
   const s = String(v).trim().toLowerCase();
+  if (!s) return "NOT_ANNOUNCED";
 
   // Check for "Not Announced", "TBA", "TBD", "Pending" keywords
   if (
@@ -617,19 +617,19 @@ async function loadExams() {
     const setRows = await setRes.json().catch(() => []);
 
     TUTORIAL_EXAMS = tutRows
-      .filter((r) => r.date && r.course)
+      .filter((r) => r.course || r.Course)
       .map((r) => ({
-        date: normDate(r.date),
-        startTime: normTime(r.startTime || "09:00"),
-        course: String(r.course || "").trim(),
-        name: String(r.name || "").trim(),
-        teacher: String(r.teacher || "").trim(),
-        marks: String(r.marks || "").trim(),
-        notes: String(r.notes || "").trim(),
+        date: normDate(r.date || r.Date || ""),
+        startTime: normTime(r.startTime || r.StartTime || "09:00"),
+        course: String(r.course || r.Course || "").trim(),
+        name: String(r.name || r.Name || "").trim(),
+        teacher: String(r.teacher || r.Teacher || "").trim(),
+        marks: String(r.marks || r.Marks || "").trim(),
+        notes: String(r.notes || r.Notes || "").trim(),
       }));
 
     FINAL_EXAMS = finRows
-      .filter((r) => r.date && r.course)
+      .filter((r) => r.course)
       .map((r) => ({
         date: normDate(r.date),
         startTime: normTime(r.startTime),
