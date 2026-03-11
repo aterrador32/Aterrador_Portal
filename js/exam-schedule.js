@@ -329,7 +329,7 @@ function buildCountdown(exams, getTarget, wrapId, listId, isFinal) {
       item.innerHTML = `
         <span class="upc-code" style="background:${c.bg};border:1px solid ${c.bdr};color:${c.tx}">${e.course}</span>
         <span class="upc-name">${e.name}</span>
-        <span class="upc-date">${e.date === "NOT_ANNOUNCED" ? "Date TBA" : `${dayOfWeek(target).slice(0, 3)}, ${fmtDate(target)}${isFinal ? ` · ${fmtTime12(e.startTime)}` : ""}`}${isFinal ? ` · ${fmtTime12(e.startTime)}` : ""}</span>
+        <span class="upc-date">${e.date === "NOT_ANNOUNCED" ? "Date TBA" : `${dayOfWeek(target).slice(0, 3)}, ${fmtDate(target)}${isFinal ? ` · ${fmtTime12(e.startTime)}` : ""}`}</span>
         ${statusHtml}
       `;
       list.appendChild(item);
@@ -522,12 +522,26 @@ function normDate(v) {
   if (iso) return iso[1];
 
   // Full date string from Google Sheets — "Thu Mar 05 2026 00:00:00 GMT+0600"
-  const d = new Date(s);
-  if (!isNaN(d.getTime())) {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${day}`;
+  const sheetsDate = s.match(/(\w{3})\s+(\d{1,2})\s+(\d{4})/);
+  if (sheetsDate) {
+    const mo = {
+      Jan: "01",
+      Feb: "02",
+      Mar: "03",
+      Apr: "04",
+      May: "05",
+      Jun: "06",
+      Jul: "07",
+      Aug: "08",
+      Sep: "09",
+      Oct: "10",
+      Nov: "11",
+      Dec: "12",
+    };
+    const month = mo[sheetsDate[1]];
+    if (month) {
+      return `${sheetsDate[3]}-${month}-${String(sheetsDate[2]).padStart(2, "0")}`;
+    }
   }
 
   return "NOT_ANNOUNCED";
