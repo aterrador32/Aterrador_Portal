@@ -623,15 +623,18 @@ async function loadExams() {
 
     TUTORIAL_EXAMS = tutRows
       .filter((r) => r.course || r.Course)
-      .map((r) => ({
-        date: normDate(r.date || r.Date || ""),
-        startTime: normTime(r.startTime || r.StartTime || "09:00"),
-        course: String(r.course || r.Course || "").trim(),
-        name: String(r.name || r.Name || "").trim(),
-        teacher: String(r.teacher || r.Teacher || "").trim(),
-        marks: String(r.marks || r.Marks || "").trim(),
-        notes: String(r.notes || r.Notes || "").trim(),
-      }));
+      .map((r) => {
+        console.log("[DEBUG] raw date:", r.date, typeof r.date);
+        return {
+          date: normDate(r.date || r.Date || ""),
+          startTime: normTime(r.startTime || r.StartTime || "09:00"),
+          course: String(r.course || r.Course || "").trim(),
+          name: String(r.name || r.Name || "").trim(),
+          teacher: String(r.teacher || r.Teacher || "").trim(),
+          marks: String(r.marks || r.Marks || "").trim(),
+          notes: String(r.notes || r.Notes || "").trim(),
+        };
+      });
 
     FINAL_EXAMS = finRows
       .filter((r) => r.course)
