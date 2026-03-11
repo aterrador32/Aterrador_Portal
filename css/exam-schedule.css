@@ -761,6 +761,49 @@ nav.mob a:hover {
   border: 1px solid rgba(66, 200, 140, 0.3);
   color: #42c88c;
 }
+/* Not Announced Status */
+.tut-status.not-announced {
+  background: rgba(88, 88, 88, 0.1);
+  border: 1px solid rgba(88, 88, 88, 0.25);
+  color: #585858;
+}
+
+.tut-card.not-announced {
+  opacity: 0.6;
+  background: rgba(88, 88, 88, 0.05);
+}
+
+.tut-card.not-announced:hover {
+  opacity: 0.8;
+  border-color: rgba(88, 88, 88, 0.4);
+}
+
+/* Final Exam Table - Not Announced Row */
+table.final-tbl tbody tr.not-announced-row {
+  background: rgba(88, 88, 88, 0.05);
+  opacity: 0.6;
+}
+
+table.final-tbl tbody tr.not-announced-row td {
+  color: #585858;
+}
+
+.f-status-pill.not-announced {
+  background: rgba(88, 88, 88, 0.1);
+  border: 1px solid rgba(88, 88, 88, 0.25);
+  color: #585858;
+}
+
+/* Upcoming list - Not Announced item */
+.upc-item.not-announced {
+  background: rgba(88, 88, 88, 0.05);
+  border-color: rgba(88, 88, 88, 0.15);
+}
+
+.upc-item.not-announced .upc-date {
+  color: #585858;
+  font-style: italic;
+}
 
 /* ── FINAL EXAM: timetable-style chart ── */
 .final-chart-scroll {

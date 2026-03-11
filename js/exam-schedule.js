@@ -160,6 +160,12 @@ function parseDateTime(dateStr, timeStr) {
 function fmtDate(d) {
   return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
+function fmtDateDisplay(dateStr) {
+  if (dateStr === "NOT_ANNOUNCED" || !dateStr) {
+    return "Not Announced";
+  }
+  return fmtDate(dateStr);
+}
 function fmtTime12(t) {
   const [h, m] = t.split(":").map(Number);
   const ampm = h >= 12 ? "PM" : "AM",
@@ -214,6 +220,7 @@ function buildCountdown(exams, getTarget, wrapId, listId, isFinal) {
   // find next upcoming
   const now = new Date();
   const upcoming = exams
+    .filter((e) => e.date !== "NOT_ANNOUNCED")
     .map((e) => ({ ...e, _target: getTarget(e) }))
     .filter((e) => e._target > now)
     .sort((a, b) => a._target - b._target);
@@ -224,7 +231,16 @@ function buildCountdown(exams, getTarget, wrapId, listId, isFinal) {
   card.className = "countdown-card";
 
   if (!next) {
-    card.innerHTML = `<div class="no-upcoming" style="width:100%">✓ All exams completed — great work!</div>`;
+    const notAnnounced = exams.filter((e) => e.date === "NOT_ANNOUNCED");
+    if (notAnnounced.length > 0) {
+      card.innerHTML = `<div class="no-upcoming" style="width:100%">
+        ⏳ ${notAnnounced.length} exam(s) — Date Not Announced
+      </div>`;
+    } else {
+      card.innerHTML = `<div class="no-upcoming" style="width:100%">
+        ✓ All exams completed — great work!
+      </div>`;
+    }
   } else {
     const c = pal(next.course);
     card.innerHTML = `
@@ -323,40 +339,61 @@ function buildCountdown(exams, getTarget, wrapId, listId, isFinal) {
 function renderTutorialGrid() {
   const grid = document.getElementById("tut-grid");
   if (!grid) return;
-  const sorted = [...TUTORIAL_EXAMS].sort(
-    (a, b) => parseDate(a.date) - parseDate(b.date),
-  );
+  const sorted = [...TUTORIAL_EXAMS].sort((a, b) => {
+    // Put NOT_ANNOUNCED exams at the end
+    if (a.date === "NOT_ANNOUNCED") return 1;
+    if (b.date === "NOT_ANNOUNCED") return -1;
+    return parseDate(a.date) - parseDate(b.date);
+  });
+
   sorted.forEach((e) => {
-    const d = parseDate(e.date);
     const c = pal(e.course);
-    const past = isPast(e.date, e.startTime);
-    const tod = isToday(e.date);
+    const isNotAnnounced = e.date === "NOT_ANNOUNCED";
+    const tod = !isNotAnnounced && isToday(e.date);
+    const past = !isNotAnnounced && isPast(e.date, e.startTime);
 
     let statusHtml;
-    if (tod)
-      statusHtml = `<div class="tut-status today"><div class="mode-dot" style="background:#42C88C"></div>Today!</div>`;
-    else if (past)
+    if (isNotAnnounced) {
+      statusHtml = `<div class="tut-status not-announced">
+        <div class="mode-dot" style="background:#585858"></div>
+        Date Not Announced
+      </div>`;
+    } else if (tod) {
+      statusHtml = `<div class="tut-status today">
+        <div class="mode-dot" style="background:#42C88C"></div>
+        Today!
+      </div>`;
+    } else if (past) {
       statusHtml = `<div class="tut-status done">✓ Completed</div>`;
-    else
-      statusHtml = `<div class="tut-status upcoming"> <div class="mode-dot"></div>Upcoming · ${daysUntil(e.date)}d at ${fmtTime12(e.startTime)}</div>`;
+    } else {
+      statusHtml = `<div class="tut-status upcoming">
+        <div class="mode-dot"></div>
+        Upcoming · ${daysUntil(e.date)}d at ${fmtTime12(e.startTime)}
+      </div>`;
+    }
+
     const card = document.createElement("div");
-    card.className = `tut-card${past && !tod ? " past" : ""}`;
-    card.style.borderColor =
-      past && !tod ? "rgba(255,255,255,.05)" : `${c.bdr}40`;
+    card.className = `tut-card${isNotAnnounced ? " not-announced" : ""}${past && !tod ? " past" : ""}`;
+    card.style.borderColor = isNotAnnounced
+      ? "rgba(88,88,88,.3)"
+      : past && !tod
+        ? "rgba(255,255,255,.05)"
+        : `${c.bdr}40`;
+
     card.innerHTML = `
-      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${c.bdr};opacity:${past ? ".3" : "1"}"></div>
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${isNotAnnounced ? "#585858" : c.bdr};opacity:${isNotAnnounced ? ".5" : past ? ".3" : "1"}"></div>
       <div class="tut-date-block">
-        <div class="tut-day-num">${String(d.getDate()).padStart(2, "0")}</div>
+        <div class="tut-day-num">${isNotAnnounced ? "?" : String(parseDate(e.date).getDate()).padStart(2, "0")}</div>
         <div class="tut-day-right">
-          <div class="tut-day-name">${WEEKDAYS[d.getDay()]}</div>
-          <div class="tut-month">${MFULL[d.getMonth()]} ${d.getFullYear()}</div>
+          <div class="tut-day-name">${isNotAnnounced ? "Date" : WEEKDAYS[parseDate(e.date).getDay()]}</div>
+          <div class="tut-month">${isNotAnnounced ? "TBA" : `${MFULL[parseDate(e.date).getMonth()]} ${parseDate(e.date).getFullYear()}`}</div>
         </div>
       </div>
       <div class="tut-course-code" style="background:${c.bg};border:1px solid ${c.bdr};color:${c.tx}">${e.course}</div>
       <div class="tut-course-name">${e.name}</div>
       <div class="tut-meta">
-        👤 <span>${e.teacher}</span><br>
-        📝 Marks: <span>${e.marks}</span><br>
+        👤 <span>${e.teacher}</span> <br>
+        📝 Marks: <span>${e.marks}</span> <br>
         📌 <span style="color:var(--txd);font-size:10px">${e.notes}</span>
       </div>
       ${statusHtml}
@@ -371,52 +408,66 @@ function renderTutorialGrid() {
 function renderFinalTable() {
   const tbody = document.getElementById("fin-tbody");
   if (!tbody) return;
-  const sorted = [...FINAL_EXAMS].sort(
-    (a, b) => parseDate(a.date) - parseDate(b.date),
-  );
+  const sorted = [...FINAL_EXAMS].sort((a, b) => {
+    // Put NOT_ANNOUNCED exams at the end
+    if (a.date === "NOT_ANNOUNCED") return 1;
+    if (b.date === "NOT_ANNOUNCED") return -1;
+    return parseDate(a.date) - parseDate(b.date);
+  });
+
   const now = new Date();
   sorted.forEach((e) => {
-    const d = parseDate(e.date);
-    const end = new Date(
-      parseDateTime(e.date, e.startTime).getTime() + e.duration * 60000,
-    );
-    const past = end < now;
-    const tod = isToday(e.date);
+    const isNotAnnounced = e.date === "NOT_ANNOUNCED";
+    const d = isNotAnnounced ? null : parseDate(e.date);
+    const end = isNotAnnounced
+      ? null
+      : new Date(
+          parseDateTime(e.date, e.startTime).getTime() + e.duration * 60000,
+        );
+    const past = !isNotAnnounced && end < now;
+    const tod = !isNotAnnounced && isToday(e.date);
     const isNow =
+      !isNotAnnounced &&
       tod &&
       new Date() >= parseDateTime(e.date, e.startTime) &&
       new Date() < end;
     const c = pal(e.course);
     const dur = `${Math.floor(e.duration / 60)}h${e.duration % 60 ? ` ${e.duration % 60}m` : ""}`;
-    const endT = `${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}`;
+    const endT = isNotAnnounced
+      ? ""
+      : `${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}`;
 
     let statusHtml;
-    if (isNow)
+    if (isNotAnnounced) {
+      statusHtml = `<span class="f-status-pill not-announced">⏳ Date TBA</span>`;
+    } else if (isNow) {
       statusHtml = `<span class="f-status-pill today">In Progress</span>`;
-    else if (tod) statusHtml = `<span class="f-status-pill today">Today</span>`;
-    else if (past)
+    } else if (tod) {
+      statusHtml = `<span class="f-status-pill today">Today</span>`;
+    } else if (past) {
       statusHtml = `<span class="f-status-pill done">Done ✓</span>`;
-    else
+    } else {
       statusHtml = `<span class="f-status-pill upcoming">${daysUntil(e.date)}d away</span>`;
+    }
 
     const tr = document.createElement("tr");
-    tr.className = `${tod ? "today-row" : ""}${past && !tod ? " past-row" : ""}`;
+    tr.className = `${tod ? "today-row" : ""}${isNotAnnounced ? "not-announced-row" : ""}${past && !tod ? "past-row" : ""}`;
     tr.innerHTML = `
       <td>
         <div class="f-date-cell">
-          <span class="f-date-main">${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}</span>
-          <span class="f-date-day">${WEEKDAYS[d.getDay()]}</span>
+          <span class="f-date-main">${isNotAnnounced ? "Not Announced" : `${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`}</span>
+          <span class="f-date-day">${isNotAnnounced ? "Check back later" : WEEKDAYS[d.getDay()]}</span>
         </div>
       </td>
       <td><span class="f-code-pill" style="background:${c.bg};border:1px solid ${c.bdr};color:${c.tx}">${e.course}</span></td>
       <td style="font-family:var(--m1);font-size:13px;color:#fff">${e.name}</td>
       <td>
         <div class="f-time-cell">
-          <span class="f-time-main">${fmtTime12(e.startTime)} – ${fmtTime12(endT)}</span>
+          <span class="f-time-main">${isNotAnnounced ? "—" : `${fmtTime12(e.startTime)} – ${fmtTime12(endT)}`}</span>
           <span class="f-time-dur">${dur}</span>
         </div>
       </td>
-      <td><span class="f-room">${e.room}</span></td>
+      <td><span class="f-room">${isNotAnnounced ? "—" : e.room}</span></td>
       <td>${statusHtml}</td>
     `;
     tbody.appendChild(tr);
@@ -441,33 +492,53 @@ function showMain() {
   document.getElementById("es-error").style.display = "none";
   document.getElementById("es-main").style.display = "block";
 }
-
 function normDate(v) {
-  if (!v) return "";
-  const s = String(v).trim();
+  if (!v || v === "" || v === null) return "NOT_ANNOUNCED";
+
+  const s = String(v).trim().toLowerCase();
+
+  // Check for "Not Announced", "TBA", "TBD", "Pending" keywords
+  if (
+    s === "not announced" ||
+    s === "tba" ||
+    s === "tbd" ||
+    s === "pending" ||
+    s === "na" ||
+    s === "n/a"
+  ) {
+    return "NOT_ANNOUNCED";
+  }
+
+  // Already YYYY-MM-DD format
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
 
+  // ISO string with time
+  const iso = s.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (iso) return iso[1];
+
+  // Month name format (e.g., "Jul 6, 2025")
+  const mo = {
+    Jan: "01",
+    Feb: "02",
+    Mar: "03",
+    Apr: "04",
+    May: "05",
+    Jun: "06",
+    Jul: "07",
+    Aug: "08",
+    Sep: "09",
+    Oct: "10",
+    Nov: "11",
+    Dec: "12",
+  };
   const dm = s.match(/(\w{3})\s+(\d{1,2})\s+(\d{4})/);
   if (dm) {
-    const mo = {
-      Jan: "01",
-      Feb: "02",
-      Mar: "03",
-      Apr: "04",
-      May: "05",
-      Jun: "06",
-      Jul: "07",
-      Aug: "08",
-      Sep: "09",
-      Oct: "10",
-      Nov: "11",
-      Dec: "12",
-    };
     return (
       dm[3] + "-" + (mo[dm[1]] || "01") + "-" + String(dm[2]).padStart(2, "0")
     );
   }
-  return s;
+
+  return "NOT_ANNOUNCED";
 }
 function normTime(v) {
   if (!v && v !== 0) return "09:00";
