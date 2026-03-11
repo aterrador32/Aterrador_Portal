@@ -499,17 +499,17 @@ function showMain() {
 }
 function normDate(v) {
   if (!v || v === "" || v === null || v === undefined) return "NOT_ANNOUNCED";
-  const s = String(v).trim().toLowerCase();
+  const s = String(v).trim();
   if (!s) return "NOT_ANNOUNCED";
 
-  // Check for "Not Announced", "TBA", "TBD", "Pending" keywords
+  const sl = s.toLowerCase();
   if (
-    s === "not announced" ||
-    s === "tba" ||
-    s === "tbd" ||
-    s === "pending" ||
-    s === "na" ||
-    s === "n/a"
+    sl === "not announced" ||
+    sl === "tba" ||
+    sl === "tbd" ||
+    sl === "pending" ||
+    sl === "na" ||
+    sl === "n/a"
   ) {
     return "NOT_ANNOUNCED";
   }
@@ -517,30 +517,17 @@ function normDate(v) {
   // Already YYYY-MM-DD format
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
 
-  // ISO string with time
+  // ISO string with time — "2026-03-05T..."
   const iso = s.match(/^(\d{4}-\d{2}-\d{2})/);
   if (iso) return iso[1];
 
-  // Month name format (e.g., "Jul 6, 2025")
-  const mo = {
-    Jan: "01",
-    Feb: "02",
-    Mar: "03",
-    Apr: "04",
-    May: "05",
-    Jun: "06",
-    Jul: "07",
-    Aug: "08",
-    Sep: "09",
-    Oct: "10",
-    Nov: "11",
-    Dec: "12",
-  };
-  const dm = s.match(/(\w{3})\s+(\d{1,2})\s+(\d{4})/);
-  if (dm) {
-    return (
-      dm[3] + "-" + (mo[dm[1]] || "01") + "-" + String(dm[2]).padStart(2, "0")
-    );
+  // Full date string from Google Sheets — "Thu Mar 05 2026 00:00:00 GMT+0600"
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
   }
 
   return "NOT_ANNOUNCED";
