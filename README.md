@@ -260,12 +260,24 @@ Deploy as:
 
 ### Generate Email Hashes
 ```JavaScript
-async function hashEmail(email) {
-  const data = new TextEncoder().encode(email.toLowerCase().trim());
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return [...new Uint8Array(hash)]
-    .map(b => b.toString(16).padStart(2, "0"))
-    .join("");
+async function getHash(email, salt) {
+  const msg = email.toLowerCase().trim() + salt;
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
+// Change the salt to YOUR chosen salt
+const SALT = "SALT";
+
+// Put ALL your emails here
+const emails = [
+  "roll63@juniv.edu",
+  "roll64@juniv.edu",
+];
+
+for (const email of emails) {
+  const h = await getHash(email, SALT);
+  console.log(`"${h}", // ${email}`);
 }
 ```
 ---
@@ -367,15 +379,7 @@ T-REX — Design & Development
 
 - 🏫 University: https://www.juniv.edu
 
-<<<<<<< HEAD
-© 2025 · All rights reserved · Designed & Developed by T-REX
-
-
----
-
 =======
 © 2026 · All rights reserved · Designed & Developed by T-REX
 
 
----
->>>>>>> 1c457fc18e6f26212325d858d9ed66d0a7d327ea
