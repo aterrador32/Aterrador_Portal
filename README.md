@@ -390,7 +390,6 @@ Code Style
 
 ## 📄 License
 
-MIT LICENSE:
 <a href='LICENSE'>see LICENSE</a>
 
 ---
