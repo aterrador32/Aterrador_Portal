@@ -1,4 +1,5 @@
-# 🚀 ATERRADOR Portal  
+# 🚀 ATERRADOR Portal
+
 ### CSE 52nd Batch · Jahangirnagar University
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen.svg)](https://your-domain.vercel.app)
@@ -11,7 +12,7 @@ It centralizes **class routines, exam schedules, notices, resources, forms, and 
 
 ## 📌 Overview
 
-- 🔐 OAuth-protected resource access  
+- 🔐 OAuth-protected resource access
 - 📊 Google Sheets–driven backend (no traditional server)
 - ⚡ Fast static deployment (Vercel / GitHub Pages)
 - 📱 Fully responsive, mobile-first design
@@ -40,6 +41,7 @@ It centralizes **class routines, exam schedules, notices, resources, forms, and 
 ## ✨ Features
 
 ### 🎓 Core Modules
+
 - **Class Routine** – Live weekly timetable with current-class indicator
 - **Exam Schedule** – Tutorial & Final exams with countdown timers
 - **Notice Board** – Internal & external notices with pinning and search
@@ -52,6 +54,7 @@ It centralizes **class routines, exam schedules, notices, resources, forms, and 
 ---
 
 ### 🔐 Security
+
 - Google OAuth 2.0 authentication
 - Client-side SHA-256 email hashing
 - Authorized member verification
@@ -60,6 +63,7 @@ It centralizes **class routines, exam schedules, notices, resources, forms, and 
 ---
 
 ### 📱 UI / UX
+
 - Mobile-first responsive layout
 - Dark theme with orange accent (`#FF6B00`)
 - Smooth animations & transitions
@@ -70,22 +74,23 @@ It centralizes **class routines, exam schedules, notices, resources, forms, and 
 
 ## 🛠 Tech Stack
 
-| Layer | Technology |
-|-----|-----------|
+| Layer    | Technology                             |
+| -------- | -------------------------------------- |
 | Frontend | HTML5, CSS3, Vanilla JavaScript (ES6+) |
-| Backend | Google Apps Script (Serverless API) |
-| Database | Google Sheets |
-| Auth | Google OAuth 2.0 |
-| Hosting | Vercel (recommended), GitHub Pages |
-| Fonts | Share Tech Mono, Courier Prime |
-| Icons | SVG + Unicode |
+| Backend  | Google Apps Script (Serverless API)    |
+| Database | Google Sheets                          |
+| Auth     | Google OAuth 2.0                       |
+| Hosting  | Vercel (recommended), GitHub Pages     |
+| Fonts    | Share Tech Mono, Courier Prime         |
+| Icons    | SVG + Unicode                          |
 
 ---
 
 ## 📁 Project Structure
+
 ```file-structure
 aterrador-portal/
-├── index.html                 # Home page 
+├── index.html                 # Home page
 ├── routine.html              # Class routine page
 ├── exam-schedule.html        # Exam schedule page
 ├── resources.html            # Resource portal (OAuth protected)
@@ -126,6 +131,7 @@ aterrador-portal/
 ├── .gitignore                # Git ignore rules
 └── README.md                 # This file
 ```
+
 ---
 
 ## 📋 Prerequisites
@@ -146,6 +152,7 @@ aterrador-portal/
 git clone https://github.com/your-username/aterrador-portal.git
 cd aterrador-portal
 ```
+
 ### 2️⃣ Run Locally (Optional)
 
 ```bash
@@ -155,16 +162,23 @@ python -m http.server 8000
 # Node.js
 npx serve .
 ```
+
 ### 3️⃣ Run Locally (Optional)
+
 Update every JS file:
+
 ```bash
 const API_URL = "YOUR_APPS_SCRIPT_URL";
 ```
+
 In resources.js:
+
 ```bash
 const GOOGLE_CLIENT_ID = "YOUR_CLIENT_ID.apps.googleusercontent.com";
 ```
+
 Add SHA-256 email hashes:
+
 ```bash
 const ALLOWED_HASHES = new Set([
   "hash1...",
@@ -175,12 +189,15 @@ const ALLOWED_HASHES = new Set([
 ---
 
 ## 🔧 Google Apps Script Setup
+
 ### Sheet Requirements
 
 Create Google Sheet named:
+
 ```code
 ATERRADOR Portal Data
 ```
+
 Tabs must match <b>exact names</b>:
 
 - Settings
@@ -206,6 +223,7 @@ Tabs must match <b>exact names</b>:
 ---
 
 ### Apps Script Code
+
 ```code
 function doGet(e) {
   const sheetName = e.parameter.sheet;
@@ -252,13 +270,14 @@ Deploy as:
 - OAuth Client Type: Web
 
 - Authorized origins:
+    - http://localhost:8000
 
-  - http://localhost:8000
+    - https://aterrador32.vercel.app
 
-  - https://aterrador32.vercel.app
 ---
 
 ### Generate Email Hashes
+
 ```JavaScript
 async function getHash(email, salt) {
   const msg = email.toLowerCase().trim() + salt;
@@ -280,6 +299,7 @@ for (const email of emails) {
   console.log(`"${h}", // ${email}`);
 }
 ```
+
 ---
 
 ## 🚀 Deployment
@@ -297,7 +317,6 @@ Or connect via GitHub → <b> Auto Deploy</b>
 
 ## GitHub Pages
 
-
 - Repo → Settings → Pages
 
 - Branch: main
@@ -307,15 +326,18 @@ Or connect via GitHub → <b> Auto Deploy</b>
 ## 🔧 Environment Variables
 
 .env.example
+
 ```env
 API_URL=https://script.google.com/macros/s/XXXX/exec
 GOOGLE_CLIENT_ID=XXXX.apps.googleusercontent.com
 ```
-⚠️ Do not commit real secrets.
----
+
+## ⚠️ Do not commit real secrets.
 
 ## 🎨 Customization
+
 ### Theme Colors
+
 ```CSS
 :root {
   --or: #ff6b00;
@@ -323,6 +345,7 @@ GOOGLE_CLIENT_ID=XXXX.apps.googleusercontent.com
   --tx: #e0e0e0;
 }
 ```
+
 ### Branding
 
 - Replace logos in /Images
@@ -330,9 +353,11 @@ GOOGLE_CLIENT_ID=XXXX.apps.googleusercontent.com
 - Update favicon
 
 - Modify fonts via Google Fonts
---- 
+
+---
 
 ## 🐛 Troubleshooting
+
 | Issue              | Fix                                         |
 | ------------------ | ------------------------------------------- |
 | CORS error         | Redeploy Apps Script with **Anyone** access |
@@ -342,7 +367,9 @@ GOOGLE_CLIENT_ID=XXXX.apps.googleusercontent.com
 | Favicon missing    | Hard refresh + cache clear                  |
 
 ---
- ## 🤝 Contributing
+
+## 🤝 Contributing
+
 1. Fork repository
 
 2. Create branch
@@ -358,18 +385,18 @@ Code Style
 - Clear variable names
 
 - Comment complex logic
+
 ---
 
 ## 📄 License
 
-MIT License — see LICENSE
+<a href='LICENSE'>MIT License — see LICENSE</a>
 
 ---
 
 ## 🙏 Acknowledgments
 
-T-REX — Design & Development
----
+## T-REX — Design & Development
 
 ## 📬 Contact
 
@@ -381,5 +408,3 @@ T-REX — Design & Development
 
 =======
 © 2026 · All rights reserved · Designed & Developed by T-REX
-
-
