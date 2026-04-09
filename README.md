@@ -388,9 +388,9 @@ Code Style
 
 ---
 
-## 📄 License
+## 📄 MIT License
 
-<a href='LICENSE'>see LICENSE</a>
+<a href='LICENSE'>See the LICENSE</a>
 
 ---
 
